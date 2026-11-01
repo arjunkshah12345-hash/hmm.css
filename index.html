@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>hmm.css — thinking states for AI interfaces</title>
+<meta name="description" content="Copy-paste loading, thinking and streaming indicators for AI products. Pure CSS, one tiny optional JS helper.">
+<link rel="stylesheet" href="src/hmm.css">
+<style>
+  :root {
+    --bg: #0c0c0d;
+    --panel: #141416;
+    --line: #232327;
+    --ink: #ededee;
+    --muted: #8b8b92;
+    --accent: #a78bfa;
+    color-scheme: dark;
+  }
+  :root.light {
+    --bg: #f6f5f1;
+    --panel: #ffffff;
+    --line: #e4e2dc;
+    --ink: #18181b;
+    --muted: #6b6b73;
+    --accent: #6d4aff;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.55 ui-sans-serif, -apple-system, "Inter", "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    transition: background .3s, color .3s;
+  }
+  code, pre, .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace; }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
+  .logo { font-weight: 650; letter-spacing: -.02em; font-size: 17px; display: flex; gap: 8px; align-items: center; }
+  .logo .hmm-caret { color: var(--accent); }
+  .navlinks { display: flex; gap: 18px; align-items: center; color: var(--muted); font-size: 14px; }
+  .navlinks a { text-decoration: none; }
+  .navlinks a:hover { color: var(--ink); }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  .ghost { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--muted); }
+  .ghost:hover { color: var(--ink); border-color: color-mix(in oklab, var(--line), var(--ink) 25%); }
+
+  header.hero { padding: 72px 0 40px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+  h1 { font-size: clamp(44px, 6.4vw, 76px); line-height: .98; letter-spacing: -.045em; margin: 0 0 22px; font-weight: 650; }
+  h1 .hmm-shimmer { color: var(--muted); }
+  .lede { font-size: 18px; color: var(--muted); max-width: 30em; margin: 0 0 28px; }
+  .install { display: inline-flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 10px 10px 16px; font-size: 14px; }
+  .install .ghost { padding: 4px 9px; font-size: 12px; }
+  .meta { margin-top: 18px; color: var(--muted); font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+
+  /* chat mock */
+  .chat { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 16px; box-shadow: 0 30px 80px -40px rgb(0 0 0 / .6); }
+  .msg-user { justify-self: end; background: color-mix(in oklab, var(--accent) 16%, var(--panel)); padding: 10px 14px; border-radius: 14px 14px 4px 14px; max-width: 80%; }
+  .msg-ai { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; }
+  .msg-ai .avatar { margin-top: 2px; }
+  .status { color: var(--muted); display: flex; gap: 8px; align-items: center; min-height: 24px; }
+  .answer { min-height: 72px; }
+  .answer p { margin: 0; }
+  .sources { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .sources span { font-size: 12px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; color: var(--muted); opacity: 0; transform: translateY(4px); transition: .4s; }
+  .sources span.on { opacity: 1; transform: none; }
+
+  /* controls */
+  .bar { position: sticky; top: 0; z-index: 5; background: color-mix(in oklab, var(--bg) 85%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
+  .filters, .swatches { display: flex; gap: 6px; align-items: center; }
+  .chip { background: none; border: 1px solid transparent; border-radius: 99px; padding: 5px 12px; color: var(--muted); font-size: 13px; }
+  .chip[aria-pressed="true"] { border-color: var(--line); color: var(--ink); background: var(--panel); }
+  .sw { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; background: var(--c); padding: 0; }
+  .sw[aria-pressed="true"] { border-color: var(--ink); }
+  .swatches label { font-size: 13px; color: var(--muted); margin-right: 4px; }
+
+  /* gallery */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; padding: 28px 0 80px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .stage { height: 150px; display: grid; place-items: center; padding: 20px; color: var(--demo); font-size: 17px; border-bottom: 1px solid var(--line); }
+  .stage .muted { color: var(--muted); }
+  .card footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px 10px 16px; gap: 8px; }
+  .card h3 { margin: 0; font-size: 14px; font-weight: 560; }
+  .card small { color: var(--muted); font-size: 12px; display: block; }
+  .card .ghost { font-size: 12px; padding: 4px 9px; white-space: nowrap; }
+  .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; border: 1px solid var(--line); color: var(--muted); padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
+
+  .tracebox { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in oklab, var(--bg) 60%, var(--panel)); color: var(--muted); font-size: 14px; }
+
+  section.docs { border-top: 1px solid var(--line); padding: 64px 0; display: grid; grid-template-columns: 240px 1fr; gap: 40px; }
+  section.docs h2 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
+  section.docs p { color: var(--muted); margin: 6px 0 0; }
+  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow: auto; font-size: 13px; line-height: 1.65; margin: 0 0 16px; }
+  .c { color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  td { border-top: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
+  td:first-child { white-space: nowrap; }
+  td code { font-size: 13px; }
+  .foot { border-top: 1px solid var(--line); padding: 28px 0 48px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; translate: -50% 20px; opacity: 0; background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; transition: .25s; pointer-events: none; }
+  .toast.on { opacity: 1; translate: -50% 0; }
+
+  @media (max-width: 860px) {
+    header.hero, section.docs { grid-template-columns: 1fr; }
+    header.hero { padding-top: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <div class="logo">hmm.css<span class="hmm-caret hmm-caret--bar"></span></div>
+    <div class="navlinks">
+      <a href="#gallery">Gallery</a>
+      <a href="#usage">Usage</a>
+      <a href="https://github.com/arjunkshah12345-hash/hmm.css">GitHub</a>
+      <button class="ghost" id="theme" aria-label="Toggle light and dark">◐</button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <h1>Thinking states<br>for <span class="hmm-shimmer">AI interfaces.</span></h1>
+      <p class="lede">Shimmering text, typing carets, orbs, scramble text and rolling status words. Copy and paste them. Pure CSS, plus a tiny optional JS helper.</p>
+      <div class="install mono"><span>npm i hmm.css</span><button class="ghost" data-copy="npm i hmm.css">Copy</button></div>
+      <div class="meta"><span>18 indicators</span><span>3 kB of CSS</span><span>0 dependencies</span><span>Respects reduced motion</span></div>
+    </div>
+
+    <div class="chat" aria-label="Demo conversation">
+      <div class="msg-user">What changed in the CSS spec this year?</div>
+      <div class="msg-ai">
+        <span class="avatar hmm-sparkle" style="--hmm-size:22px;--hmm-a:#a78bfa;--hmm-b:#22d3ee"></span>
+        <div>
+          <div class="status" id="status"><span class="hmm-shimmer" id="statusText">Thinking</span></div>
+          <div class="answer" id="answer"></div>
+          <div class="sources" id="sources"><span>w3.org</span><span>developer.mozilla.org</span><span>web.dev</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="filters" role="group" aria-label="Filter">
+      <button class="chip" aria-pressed="true" data-f="all">All</button>
+      <button class="chip" aria-pressed="false" data-f="text">Text</button>
+      <button class="chip" aria-pressed="false" data-f="shape">Shapes</button>
+      <button class="chip" aria-pressed="false" data-f="surface">Surfaces</button>
+    </div>
+    <div class="swatches" role="group" aria-label="Demo colour">
+      <label>color</label>
+      <button class="sw" style="--c:var(--ink)" data-c="var(--ink)" aria-pressed="true" aria-label="Ink"></button>
+      <button class="sw" style="--c:#a78bfa" data-c="#a78bfa" aria-pressed="false" aria-label="Violet"></button>
+      <button class="sw" style="--c:#22d3ee" data-c="#22d3ee" aria-pressed="false" aria-label="Cyan"></button>
+      <button class="sw" style="--c:#f97316" data-c="#f97316" aria-pressed="false" aria-label="Orange"></button>
+      <button class="sw" style="--c:#10b981" data-c="#10b981" aria-pressed="false" aria-label="Green"></button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="grid" id="gallery"></div>
+
+  <section class="docs" id="usage">
+    <div><h2>Usage</h2><p>Add the stylesheet, drop in the markup. Everything reads <code>currentColor</code>.</p></div>
+    <div>
+<pre><span class="c">&lt;!-- CDN --&gt;</span>
+&lt;link rel="stylesheet" href="https://unpkg.com/hmm.css"&gt;
+
+<span class="c">&lt;!-- pure CSS --&gt;</span>
+&lt;span class="hmm-shimmer"&gt;Thinking&lt;/span&gt;
+&lt;span class="hmm-dots"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/span&gt;
+&lt;p&gt;Streaming answer&lt;span class="hmm-caret"&gt;&lt;/span&gt;&lt;/p&gt;</pre>
+<pre><span class="c">// JS-powered ones (wave, glimmer, rise, roll, scramble)</span>
+import "hmm.css";
+import "hmm.css/auto";   <span class="c">// wires up data-hmm-* attributes</span>
+
+<span class="c">// or drive them yourself</span>
+import { split, scramble, cycle } from "hmm.css/js";
+const stop = cycle(el, ["Thinking", "Searching", "Reading"]);
+await scramble(el, "Found 12 sources");</pre>
+      <table>
+        <tr><td><code>--hmm-duration</code></td><td>Length of one cycle. Each indicator has its own default.</td></tr>
+        <tr><td><code>--hmm-size</code></td><td>Size of shape indicators: dots, orb, aura, sparkle and the rest.</td></tr>
+        <tr><td><code>--hmm-highlight</code></td><td>Colour of the shimmer sweep. Defaults to a lighter currentColor.</td></tr>
+        <tr><td><code>--hmm-a … --hmm-d</code></td><td>Palette for the multi-colour indicators: aura, sparkle, blob and trace.</td></tr>
+        <tr><td><code>--hmm-radius</code>, <code>--hmm-width</code></td><td>Corner radius and stroke width for <code>.hmm-trace</code>.</td></tr>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div class="wrap foot"><span>MIT · hmm.css</span><span>Made for people building with LLMs.</span></div>
+<div class="toast" id="toast">Copied</div>
+
+<script type="module">
+import { init, cycle, scramble } from "./src/hmm.js";
+
+const items = [
+  { name: "Shimmer", note: "light sweeps across text", kind: "text",
+    html: `<span class="hmm-shimmer">Thinking</span>` },
+  { name: "Ellipsis", note: "no layout jitter", kind: "text",
+    html: `<span class="hmm-ellipsis">Thinking</span>` },
+  { name: "Wave", note: "letters ripple", kind: "text", js: true,
+    html: `<span class="hmm-wave" data-hmm-split>Reasoning</span>` },
+  { name: "Glimmer", note: "letters light up in turn", kind: "text", js: true,
+    html: `<span class="hmm-glimmer" data-hmm-split>Searching the web</span>` },
+  { name: "Rise", note: "blur in, drift out", kind: "text", js: true,
+    html: `<span class="hmm-rise" data-hmm-split>Analyzing</span>` },
+  { name: "Roll", note: "rotating status words", kind: "text", js: true,
+    html: `<span data-hmm-cycle="Thinking|Searching|Reading 12 sources|Writing"></span>` },
+  { name: "Scramble", note: "decodes into each phrase", kind: "text", js: true,
+    html: `<span class="mono" data-hmm-cycle="Thinking|Calling tools|Running code" data-hmm-effect="scramble"></span>` },
+  { name: "Caret", note: "block, bar or dot", kind: "text",
+    html: `<span>Writing<span class="hmm-caret"></span></span>` },
+  { name: "Dots", note: "the classic typing bubble", kind: "shape",
+    html: `<span class="hmm-dots"><i></i><i></i><i></i></span>` },
+  { name: "Bars", note: "voice / audio level", kind: "shape",
+    html: `<span class="hmm-bars"><i></i><i></i><i></i><i></i><i></i></span>` },
+  { name: "Matrix", note: "diagonal pulse", kind: "shape",
+    html: `<span class="hmm-matrix"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>` },
+  { name: "Ping", note: "listening", kind: "shape",
+    html: `<span class="hmm-ping"></span>` },
+  { name: "Orbit", note: "two dots chasing", kind: "shape",
+    html: `<span class="hmm-orbit"></span>` },
+  { name: "Orb", note: "breathing sphere", kind: "shape",
+    html: `<span class="hmm-orb" style="--hmm-size:34px"></span>` },
+  { name: "Aura", note: "multi-colour, voice-mode style", kind: "shape",
+    html: `<span class="hmm-aura" style="--hmm-size:44px"></span>` },
+  { name: "Sparkle", note: "the AI glyph, twinkling", kind: "shape",
+    html: `<span class="hmm-sparkle" style="--hmm-size:32px"></span>` },
+  { name: "Blob", note: "slow shape-shift", kind: "shape",
+    html: `<span class="hmm-blob" style="--hmm-size:38px"></span>` },
+  { name: "Trace", note: "light runs round any box", kind: "surface",
+    html: `<div class="hmm-trace" style="--hmm-radius:12px;width:100%;border-radius:12px"><div class="tracebox">Working on it…</div></div>` },
+  { name: "Lines", note: "skeleton while streaming", kind: "surface",
+    html: `<div class="hmm-lines"><i></i><i></i><i></i></div>` },
+];
+
+const grid = document.getElementById("gallery");
+for (const it of items) {
+  const card = document.createElement("article");
+  card.className = "card";
+  card.dataset.kind = it.kind;
+  card.innerHTML = `
+    <div class="stage">${it.html}</div>
+    <footer>
+      <div><h3>${it.name}${it.js ? '<span class="tag">js</span>' : ""}</h3><small>${it.note}</small></div>
+      <button class="ghost">Copy</button>
+    </footer>`;
+  card.querySelector("button").dataset.copy = it.html;
+  grid.append(card);
+}
+init(grid);
+
+// copy
+const toast = document.getElementById("toast");
+document.addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-copy]");
+  if (!b) return;
+  await navigator.clipboard.writeText(b.dataset.copy);
+  toast.classList.add("on");
+  setTimeout(() => toast.classList.remove("on"), 1200);
+});
+
+// filters
+document.querySelectorAll(".chip").forEach((chip) => chip.addEventListener("click", () => {
+  document.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c === chip));
+  grid.querySelectorAll(".card").forEach((card) => {
+    card.hidden = chip.dataset.f !== "all" && card.dataset.kind !== chip.dataset.f;
+  });
+}));
+
+// colour
+document.querySelectorAll(".sw").forEach((sw) => sw.addEventListener("click", () => {
+  document.querySelectorAll(".sw").forEach((s) => s.setAttribute("aria-pressed", s === sw));
+  document.documentElement.style.setProperty("--demo", sw.dataset.c);
+}));
+document.documentElement.style.setProperty("--demo", "var(--ink)");
+
+// theme
+document.getElementById("theme").addEventListener("click", () => document.documentElement.classList.toggle("light"));
+
+// chat mock: status cycles, then the answer streams in with a caret
+const statusText = document.getElementById("statusText");
+const answer = document.getElementById("answer");
+const sources = [...document.querySelectorAll("#sources span")];
+const reply = "Container queries reached full support, :has() went mainstream, and @property made animatable custom properties practical. That last one is how the trace border on this page works.";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+async function play() {
+  for (;;) {
+    answer.innerHTML = "";
+    sources.forEach((s) => s.classList.remove("on"));
+    statusText.className = "hmm-shimmer";
+    const stop = cycle(statusText, ["Thinking", "Searching the web", "Reading 3 sources"], { interval: 1600 });
+    for (const s of sources) { await sleep(1400); s.classList.add("on"); }
+    await sleep(300);
+    stop();
+    await scramble(statusText, "Thought for 4s", { duration: 500 });
+    statusText.className = "";
+    const p = document.createElement("p");
+    const caret = Object.assign(document.createElement("span"), { className: "hmm-caret hmm-caret--dot" });
+    answer.append(p);
+    const words = reply.split(" ");
+    for (let i = 0; i < words.length; i++) {
+      p.textContent = words.slice(0, i + 1).join(" ");
+      p.append(caret);
+      await sleep(45 + Math.random() * 70);
+    }
+    await sleep(900);
+    caret.remove();
+    await sleep(3500);
+  }
+}
+play();
+</script>
+</body>
+</html>

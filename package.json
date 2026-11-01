@@ -1,0 +1,21 @@
+{
+  "name": "hmm.css",
+  "version": "0.1.0",
+  "description": "Thinking states for AI interfaces: shimmer text, typing carets, orbs, scramble and rolling status words. Pure CSS plus an optional tiny JS helper.",
+  "type": "module",
+  "style": "src/hmm.css",
+  "main": "src/hmm.css",
+  "unpkg": "src/hmm.css",
+  "exports": {
+    ".": "./src/hmm.css",
+    "./css": "./src/hmm.css",
+    "./js": "./src/hmm.js",
+    "./auto": "./src/auto.js"
+  },
+  "files": ["src"],
+  "sideEffects": ["*.css", "./src/auto.js"],
+  "keywords": ["css", "loading", "spinner", "shimmer", "ai", "llm", "chat", "typing-indicator", "skeleton", "animation"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/arjunkshah12345-hash/hmm.css.git" },
+  "homepage": "https://arjunkshah12345-hash.github.io/hmm.css/"
+}
