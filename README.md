@@ -2,6 +2,8 @@
 
 Thinking states for AI interfaces. Shimmer text, typing carets, orbs, scramble text and rolling status words, ready to copy and paste.
 
+Docs and live playground: https://arjunkshah12345-hash.github.io/hmm.css/
+
 Pure CSS, ~3 kB of CSS gzipped, zero dependencies. Colour comes from `currentColor`, and reduced-motion users get a gentle fade instead of movement.
 
 ## Install
@@ -11,7 +13,7 @@ npm i hmm.css
 ```
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/hmm.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/arjunkshah12345-hash/hmm.css@main/src/hmm.css">
 ```
 
 ## Use
