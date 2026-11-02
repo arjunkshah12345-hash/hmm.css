@@ -4,307 +4,489 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hmm.css — thinking states for AI interfaces</title>
-<meta name="description" content="Copy-paste loading, thinking and streaming indicators for AI products. Pure CSS, one tiny optional JS helper.">
+<meta name="description" content="18 copy-paste thinking, streaming and listening states for AI interfaces. Pure CSS, ~3 kB, with a tiny optional JS helper.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/hmm.css">
 <style>
   :root {
-    --bg: #0c0c0d;
-    --panel: #141416;
-    --line: #232327;
-    --ink: #ededee;
-    --muted: #8b8b92;
+    --bg: #0a0a0b;
+    --panel: #111113;
+    --raise: #17171a;
+    --line: rgb(255 255 255 / .075);
+    --line-strong: rgb(255 255 255 / .14);
+    --ink: #f2f2f3;
+    --sub: #a1a1a8;
+    --muted: #6c6c74;
+    --dot: rgb(255 255 255 / .07);
     --accent: #a78bfa;
+    --demo: var(--ink);
+    --sans: "Geist", ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --serif: "Instrument Serif", Georgia, serif;
     color-scheme: dark;
   }
   :root.light {
-    --bg: #f6f5f1;
+    --bg: #f7f6f2;
     --panel: #ffffff;
-    --line: #e4e2dc;
-    --ink: #18181b;
-    --muted: #6b6b73;
+    --raise: #fbfaf7;
+    --line: rgb(20 20 25 / .08);
+    --line-strong: rgb(20 20 25 / .16);
+    --ink: #141417;
+    --sub: #55555d;
+    --muted: #8a8a92;
+    --dot: rgb(20 20 25 / .09);
     --accent: #6d4aff;
     color-scheme: light;
   }
+
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 72px; }
   body {
     margin: 0;
     background: var(--bg);
     color: var(--ink);
-    font: 15px/1.55 ui-sans-serif, -apple-system, "Inter", "Segoe UI", sans-serif;
+    font: 15px/1.6 var(--sans);
     -webkit-font-smoothing: antialiased;
-    transition: background .3s, color .3s;
+    text-rendering: optimizeLegibility;
   }
-  code, pre, .mono { font-family: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace; }
-  a { color: inherit; }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  ::selection { background: color-mix(in oklab, var(--accent) 35%, transparent); }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+  code, pre, .mono { font-family: var(--mono); font-feature-settings: "ss01"; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
 
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; }
-  .logo { font-weight: 650; letter-spacing: -.02em; font-size: 17px; display: flex; gap: 8px; align-items: center; }
-  .logo .hmm-caret { color: var(--accent); }
-  .navlinks { display: flex; gap: 18px; align-items: center; color: var(--muted); font-size: 14px; }
-  .navlinks a { text-decoration: none; }
-  .navlinks a:hover { color: var(--ink); }
-  button { font: inherit; color: inherit; cursor: pointer; }
-  .ghost { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--muted); }
-  .ghost:hover { color: var(--ink); border-color: color-mix(in oklab, var(--line), var(--ink) 25%); }
+  /* ---------- nav ---------- */
+  .nav {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in oklab, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color .2s;
+  }
+  .nav.scrolled { border-bottom-color: var(--line); }
+  .nav .wrap { height: 60px; display: flex; align-items: center; gap: 28px; }
+  .brand { display: flex; align-items: baseline; gap: 1px; font-weight: 600; font-size: 16px; letter-spacing: -.02em; }
+  .brand .ext { color: var(--muted); font-weight: 500; }
+  .brand .hmm-caret { color: var(--accent); width: 2px; margin-left: 4px; }
+  .links { display: flex; gap: 22px; font-size: 14px; color: var(--sub); }
+  .links a:hover { color: var(--ink); }
+  .tools { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .swatches { display: flex; gap: 6px; padding: 5px; border: 1px solid var(--line); border-radius: 99px; }
+  .sw { width: 16px; height: 16px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgb(127 127 127 / .3); transition: transform .15s; }
+  .sw:hover { transform: scale(1.15); }
+  .sw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px var(--ink); }
+  .icon-btn { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--sub); border: 1px solid var(--line); }
+  .icon-btn:hover { color: var(--ink); border-color: var(--line-strong); }
+  .gh { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; padding: 7px 12px; border-radius: 8px; background: var(--ink); color: var(--bg); }
 
-  header.hero { padding: 72px 0 40px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
-  h1 { font-size: clamp(44px, 6.4vw, 76px); line-height: .98; letter-spacing: -.045em; margin: 0 0 22px; font-weight: 650; }
-  h1 .hmm-shimmer { color: var(--muted); }
-  .lede { font-size: 18px; color: var(--muted); max-width: 30em; margin: 0 0 28px; }
-  .install { display: inline-flex; align-items: center; gap: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 10px 10px 16px; font-size: 14px; }
-  .install .ghost { padding: 4px 9px; font-size: 12px; }
-  .meta { margin-top: 18px; color: var(--muted); font-size: 13px; display: flex; gap: 18px; flex-wrap: wrap; }
+  /* ---------- hero ---------- */
+  .hero { padding: 88px 0 96px; display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 64px; align-items: center; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font: 500 12px/1 var(--mono); color: var(--sub); padding: 7px 12px 7px 9px; border: 1px solid var(--line); border-radius: 99px; margin-bottom: 28px; }
+  .eyebrow .hmm-ping { --hmm-size: 12px; color: #34d399; }
+  h1 {
+    margin: 0 0 24px;
+    font-size: clamp(48px, 6vw, 78px);
+    line-height: .95;
+    letter-spacing: -.045em;
+    font-weight: 500;
+  }
+  h1 em {
+    display: inline-block;
+    font: italic 400 1.08em/1 var(--serif);
+    letter-spacing: -.02em;
+    padding-right: .06em;
+    color: var(--muted);
+    --hmm-highlight: var(--ink);
+    --hmm-duration: 3.2s;
+  }
+  .lede { text-wrap: pretty; font-size: 18px; line-height: 1.55; color: var(--sub); max-width: 31em; margin: 0 0 36px; }
+  .lede strong { color: var(--ink); font-weight: 500; }
+  .cta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .cmd { display: inline-flex; align-items: center; gap: 14px; height: 46px; padding: 0 6px 0 16px; border: 1px solid var(--line-strong); border-radius: 12px; background: var(--panel); font: 14px var(--mono); }
+  .cmd .dollar { color: var(--muted); margin-right: -6px; }
+  .copy { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 10px; border-radius: 8px; color: var(--sub); font: 500 12px var(--sans); transition: color .15s, background .15s; }
+  .copy:hover { color: var(--ink); background: var(--raise); }
+  .copy.done { color: #34d399; }
+  .link-btn { height: 46px; display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 12px; color: var(--sub); font-weight: 500; font-size: 14px; }
+  .link-btn:hover { color: var(--ink); }
+  .link-btn span { transition: transform .2s; }
+  .link-btn:hover span { transform: translateY(2px); }
 
-  /* chat mock */
-  .chat { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 16px; box-shadow: 0 30px 80px -40px rgb(0 0 0 / .6); }
-  .msg-user { justify-self: end; background: color-mix(in oklab, var(--accent) 16%, var(--panel)); padding: 10px 14px; border-radius: 14px 14px 4px 14px; max-width: 80%; }
-  .msg-ai { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; }
-  .msg-ai .avatar { margin-top: 2px; }
-  .status { color: var(--muted); display: flex; gap: 8px; align-items: center; min-height: 24px; }
-  .answer { min-height: 72px; }
+  /* chat demo */
+  .demo { position: relative; }
+  .chat {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 24px;
+    display: grid;
+    gap: 20px;
+    box-shadow: 0 1px 0 rgb(255 255 255 / .04) inset, 0 40px 100px -40px rgb(0 0 0 / .55);
+  }
+  .light .chat { box-shadow: 0 30px 80px -40px rgb(20 20 40 / .25); }
+  .msg-user { justify-self: end; background: var(--raise); border: 1px solid var(--line); padding: 10px 15px; border-radius: 16px 16px 4px 16px; font-size: 14.5px; max-width: 85%; }
+  .msg-ai { display: grid; grid-template-columns: 24px 1fr; gap: 14px; align-items: start; }
+  .msg-ai .hmm-sparkle { margin-top: 1px; --hmm-size: 22px; --hmm-a: #a78bfa; --hmm-b: #22d3ee; }
+  .status { color: var(--muted); font-size: 14px; height: 24px; display: flex; align-items: center; --hmm-highlight: var(--ink); }
+  .answer { min-height: 96px; font-size: 14.5px; line-height: 1.65; margin-top: 6px; }
   .answer p { margin: 0; }
-  .sources { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-  .sources span { font-size: 12px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; color: var(--muted); opacity: 0; transform: translateY(4px); transition: .4s; }
+  .answer code { font-size: 13px; padding: 1px 5px; border-radius: 5px; background: var(--raise); border: 1px solid var(--line); }
+  .sources { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+  .sources span { font: 12px var(--mono); border: 1px solid var(--line); border-radius: 99px; padding: 3px 10px; color: var(--sub); opacity: 0; transform: translateY(4px); transition: opacity .4s, transform .4s; }
   .sources span.on { opacity: 1; transform: none; }
 
-  /* controls */
-  .bar { position: sticky; top: 0; z-index: 5; background: color-mix(in oklab, var(--bg) 85%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-  .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 12px; padding-bottom: 12px; flex-wrap: wrap; }
-  .filters, .swatches { display: flex; gap: 6px; align-items: center; }
-  .chip { background: none; border: 1px solid transparent; border-radius: 99px; padding: 5px 12px; color: var(--muted); font-size: 13px; }
-  .chip[aria-pressed="true"] { border-color: var(--line); color: var(--ink); background: var(--panel); }
-  .sw { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; background: var(--c); padding: 0; }
-  .sw[aria-pressed="true"] { border-color: var(--ink); }
-  .swatches label { font-size: 13px; color: var(--muted); margin-right: 4px; }
+  .legend { list-style: none; margin: 16px 0 0; padding: 0 6px; display: grid; gap: 2px; }
+  .legend li { display: flex; justify-content: space-between; gap: 16px; font-size: 12.5px; color: var(--muted); padding: 5px 0; transition: color .3s; }
+  .legend li code { font-size: 12px; transition: color .3s; }
+  .legend li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); align-self: center; margin-right: -6px; transition: background .3s, box-shadow .3s; }
+  .legend li span { margin-right: auto; }
+  .legend li.on { color: var(--sub); }
+  .legend li.on code { color: var(--ink); }
+  .legend li.on::before { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent); }
 
-  /* gallery */
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; padding: 28px 0 80px; }
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
-  .stage { height: 150px; display: grid; place-items: center; padding: 20px; color: var(--demo); font-size: 17px; border-bottom: 1px solid var(--line); }
-  .stage .muted { color: var(--muted); }
-  .card footer { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px 10px 16px; gap: 8px; }
-  .card h3 { margin: 0; font-size: 14px; font-weight: 560; }
-  .card small { color: var(--muted); font-size: 12px; display: block; }
-  .card .ghost { font-size: 12px; padding: 4px 9px; white-space: nowrap; }
-  .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; border: 1px solid var(--line); color: var(--muted); padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
+  /* ---------- gallery ---------- */
+  .section-head { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; padding: 72px 0 24px; border-top: 1px solid var(--line); }
+  .section-head .num { font: 500 12px var(--mono); color: var(--muted); margin-bottom: 14px; display: block; }
+  .section-head h2 { margin: 0; font-size: 34px; letter-spacing: -.035em; font-weight: 500; line-height: 1.05; }
+  .section-head h2 em { font: italic 400 1.1em var(--serif); letter-spacing: -.01em; color: var(--sub); }
+  .section-head p { margin: 0; color: var(--sub); max-width: 24em; text-align: right; font-size: 14.5px; text-wrap: balance; }
 
-  .tracebox { width: 100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in oklab, var(--bg) 60%, var(--panel)); color: var(--muted); font-size: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 24px; }
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover { border-color: var(--line-strong); }
+  .card.big { grid-column: span 2; grid-row: span 2; }
+  .card.wide { grid-column: span 2; }
+  .stage {
+    flex: 1;
+    min-height: 176px;
+    display: grid;
+    place-items: center;
+    padding: 28px;
+    color: var(--demo);
+    font-size: 17px;
+    background:
+      radial-gradient(circle, var(--dot) 1px, transparent 1.5px) 0 0 / 18px 18px;
+    -webkit-mask: radial-gradient(130% 110% at 50% 45%, #000 55%, transparent);
+    mask: radial-gradient(130% 110% at 50% 45%, #000 55%, transparent);
+    transition: color .3s;
+  }
+  .card .idx { position: absolute; top: 14px; left: 16px; font: 11px var(--mono); color: var(--muted); }
+  .card .js { position: absolute; top: 12px; right: 14px; font: 500 10px var(--mono); letter-spacing: .04em; color: var(--muted); border: 1px solid var(--line); padding: 2px 6px; border-radius: 5px; }
+  .card footer { display: flex; align-items: center; gap: 12px; padding: 12px 10px 12px 16px; border-top: 1px solid var(--line); }
+  .card h3 { margin: 0; font-size: 14px; font-weight: 500; letter-spacing: -.01em; }
+  .card .cls { font: 12px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card footer > div { min-width: 0; flex: 1; }
+  .card .copy { opacity: .6; }
+  .card:hover .copy, .card .copy:focus-visible, .card .copy.done { opacity: 1; }
 
-  section.docs { border-top: 1px solid var(--line); padding: 64px 0; display: grid; grid-template-columns: 240px 1fr; gap: 40px; }
-  section.docs h2 { margin: 0; font-size: 22px; letter-spacing: -.02em; }
-  section.docs p { color: var(--muted); margin: 6px 0 0; }
-  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; overflow: auto; font-size: 13px; line-height: 1.65; margin: 0 0 16px; }
-  .c { color: var(--muted); }
-  table { border-collapse: collapse; width: 100%; font-size: 14px; }
-  td { border-top: 1px solid var(--line); padding: 10px 8px; vertical-align: top; }
-  td:first-child { white-space: nowrap; }
-  td code { font-size: 13px; }
-  .foot { border-top: 1px solid var(--line); padding: 28px 0 48px; color: var(--muted); font-size: 13px; display: flex; justify-content: space-between; }
+  /* demo-only bits inside stages */
+  .mock-input { width: 100%; max-width: 420px; display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--raise); border: 1px solid var(--line); font-size: 14px; color: var(--sub); }
+  .mock-input .hmm-dots { margin-left: auto; color: var(--muted); --hmm-size: 5px; }
+  .mock-msg { width: 100%; max-width: 420px; display: grid; grid-template-columns: 28px 1fr; gap: 14px; }
+  .mock-msg .av { width: 28px; height: 28px; border-radius: 50%; background: var(--raise); border: 1px solid var(--line); }
 
-  .toast { position: fixed; bottom: 22px; left: 50%; translate: -50% 20px; opacity: 0; background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 8px; font-size: 13px; transition: .25s; pointer-events: none; }
-  .toast.on { opacity: 1; translate: -50% 0; }
+  /* ---------- usage ---------- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .step h3 { margin: 0; font-size: 15px; font-weight: 500; display: flex; gap: 10px; align-items: baseline; }
+  .step h3 .n { font: 12px var(--mono); color: var(--muted); }
+  .step p { margin: 0; color: var(--sub); font-size: 14px; }
+  pre { flex: 1; margin: 4px 0 0; padding: 16px; border-radius: 10px; background: var(--raise); border: 1px solid var(--line); font-size: 12.5px; line-height: 1.7; overflow-x: auto; color: var(--sub); }
+  .t-c { color: var(--muted); }
+  .t-t { color: var(--ink); }
+  .t-a { color: color-mix(in oklab, var(--accent) 80%, var(--ink)); }
+  .t-s { color: #6ee7b7; }
+  .light .t-s { color: #047857; }
 
-  @media (max-width: 860px) {
-    header.hero, section.docs { grid-template-columns: 1fr; }
-    header.hero { padding-top: 36px; }
+  .props { margin-top: 12px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--panel); }
+  .props div { display: grid; grid-template-columns: 260px 140px 1fr; gap: 16px; padding: 14px 22px; font-size: 14px; border-top: 1px solid var(--line); color: var(--sub); align-items: baseline; }
+  .props div:first-child { border-top: 0; font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding-top: 14px; }
+  .props code { color: var(--ink); font-size: 13px; }
+  .props .def { font: 12.5px var(--mono); color: var(--muted); }
+
+  footer.site { margin-top: 96px; border-top: 1px solid var(--line); }
+  footer.site .wrap { display: flex; justify-content: space-between; align-items: center; padding-top: 28px; padding-bottom: 40px; color: var(--muted); font-size: 13px; gap: 16px; }
+  footer.site a:hover { color: var(--ink); }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 1040px) {
+    .hero { grid-template-columns: 1fr; gap: 56px; padding-top: 56px; }
+    .demo { max-width: 560px; }
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .links, .gh span { display: none; }
+    .section-head { grid-template-columns: 1fr; }
+    .section-head p { text-align: left; }
+    .props div { grid-template-columns: 1fr; gap: 4px; }
+    .props div:first-child { display: none; }
+  }
+  @media (max-width: 520px) {
+    .wrap { padding: 0 18px; }
+    .grid { gap: 8px; }
+    .card.big { grid-row: auto; }
+    .stage { min-height: 132px; padding: 30px 10px 14px; font-size: 14px; }
+    .card footer { padding: 10px 6px 10px 12px; gap: 4px; }
+    .card .copy span { display: none; }
+    .swatches { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <nav>
-    <div class="logo">hmm.css<span class="hmm-caret hmm-caret--bar"></span></div>
-    <div class="navlinks">
-      <a href="#gallery">Gallery</a>
-      <a href="#usage">Usage</a>
-      <a href="https://github.com/arjunkshah12345-hash/hmm.css">GitHub</a>
-      <button class="ghost" id="theme" aria-label="Toggle light and dark">◐</button>
-    </div>
-  </nav>
 
-  <header class="hero">
-    <div>
-      <h1>Thinking states<br>for <span class="hmm-shimmer">AI interfaces.</span></h1>
-      <p class="lede">Shimmering text, typing carets, orbs, scramble text and rolling status words. Copy and paste them. Pure CSS, plus a tiny optional JS helper.</p>
-      <div class="install mono"><span>npm i hmm.css</span><button class="ghost" data-copy="npm i hmm.css">Copy</button></div>
-      <div class="meta"><span>18 indicators</span><span>3 kB of CSS</span><span>0 dependencies</span><span>Respects reduced motion</span></div>
-    </div>
-
-    <div class="chat" aria-label="Demo conversation">
-      <div class="msg-user">What changed in the CSS spec this year?</div>
-      <div class="msg-ai">
-        <span class="avatar hmm-sparkle" style="--hmm-size:22px;--hmm-a:#a78bfa;--hmm-b:#22d3ee"></span>
-        <div>
-          <div class="status" id="status"><span class="hmm-shimmer" id="statusText">Thinking</span></div>
-          <div class="answer" id="answer"></div>
-          <div class="sources" id="sources"><span>w3.org</span><span>developer.mozilla.org</span><span>web.dev</span></div>
-        </div>
-      </div>
-    </div>
-  </header>
-</div>
-
-<div class="bar">
+<nav class="nav" id="nav">
   <div class="wrap">
-    <div class="filters" role="group" aria-label="Filter">
-      <button class="chip" aria-pressed="true" data-f="all">All</button>
-      <button class="chip" aria-pressed="false" data-f="text">Text</button>
-      <button class="chip" aria-pressed="false" data-f="shape">Shapes</button>
-      <button class="chip" aria-pressed="false" data-f="surface">Surfaces</button>
+    <a class="brand" href="#top">hmm<span class="ext">.css</span><span class="hmm-caret hmm-caret--bar" aria-hidden="true"></span></a>
+    <div class="links">
+      <a href="#text">Gallery</a>
+      <a href="#usage">Usage</a>
     </div>
-    <div class="swatches" role="group" aria-label="Demo colour">
-      <label>color</label>
-      <button class="sw" style="--c:var(--ink)" data-c="var(--ink)" aria-pressed="true" aria-label="Ink"></button>
-      <button class="sw" style="--c:#a78bfa" data-c="#a78bfa" aria-pressed="false" aria-label="Violet"></button>
-      <button class="sw" style="--c:#22d3ee" data-c="#22d3ee" aria-pressed="false" aria-label="Cyan"></button>
-      <button class="sw" style="--c:#f97316" data-c="#f97316" aria-pressed="false" aria-label="Orange"></button>
-      <button class="sw" style="--c:#10b981" data-c="#10b981" aria-pressed="false" aria-label="Green"></button>
+    <div class="tools">
+      <div class="swatches" role="group" aria-label="Preview colour">
+        <button class="sw" style="--c:var(--ink)" data-c="var(--ink)" aria-pressed="true" aria-label="Ink"></button>
+        <button class="sw" style="--c:#a78bfa" data-c="#a78bfa" aria-pressed="false" aria-label="Violet"></button>
+        <button class="sw" style="--c:#38bdf8" data-c="#38bdf8" aria-pressed="false" aria-label="Sky"></button>
+        <button class="sw" style="--c:#fb923c" data-c="#fb923c" aria-pressed="false" aria-label="Orange"></button>
+        <button class="sw" style="--c:#34d399" data-c="#34d399" aria-pressed="false" aria-label="Green"></button>
+      </div>
+      <button class="icon-btn" id="theme" aria-label="Toggle light and dark">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.25"/><path d="M8 1.75v12.5A6.25 6.25 0 0 0 8 1.75Z" fill="currentColor"/></svg>
+      </button>
+      <a class="gh" href="https://github.com/arjunkshah12345-hash/hmm.css">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span>GitHub</span>
+      </a>
     </div>
   </div>
-</div>
+</nav>
 
-<main class="wrap">
-  <div class="grid" id="gallery"></div>
+<main id="top">
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <span class="eyebrow"><span class="hmm-ping" aria-hidden="true"></span>v0.1 · 18 indicators · MIT</span>
+        <h1>Make the wait<br><em class="hmm-shimmer">feel like thinking.</em></h1>
+        <p class="lede">Copy-paste <strong>thinking, streaming and listening states</strong> for AI interfaces. Pure CSS in about 3&nbsp;kB, with a tiny optional helper for the text effects.</p>
+        <div class="cta">
+          <div class="cmd"><span class="dollar">$</span><span>npm i hmm.css</span><button class="copy" data-copy="npm i hmm.css">Copy</button></div>
+          <a class="link-btn" href="#text">Browse the gallery <span>↓</span></a>
+        </div>
+      </div>
 
-  <section class="docs" id="usage">
-    <div><h2>Usage</h2><p>Add the stylesheet, drop in the markup. Everything reads <code>currentColor</code>.</p></div>
-    <div>
-<pre><span class="c">&lt;!-- CDN --&gt;</span>
-&lt;link rel="stylesheet" href="https://unpkg.com/hmm.css"&gt;
+      <div class="demo">
+        <div class="chat" aria-label="Demo conversation">
+          <div class="msg-user">What landed in CSS this year?</div>
+          <div class="msg-ai">
+            <span class="hmm-sparkle" aria-hidden="true"></span>
+            <div>
+              <div class="status"><span class="hmm-shimmer" id="statusText">Thinking</span></div>
+              <div class="answer" id="answer"></div>
+              <div class="sources" id="sources"><span>w3.org</span><span>mdn</span><span>web.dev</span></div>
+            </div>
+          </div>
+        </div>
+        <ul class="legend" aria-label="Components in this demo">
+          <li data-step="avatar" class="on"><span>Avatar</span><code>.hmm-sparkle</code></li>
+          <li data-step="status"><span>Status</span><code>.hmm-shimmer + cycle()</code></li>
+          <li data-step="done"><span>Settled</span><code>scramble()</code></li>
+          <li data-step="stream"><span>Streaming</span><code>.hmm-caret--dot</code></li>
+        </ul>
+      </div>
+    </header>
 
-<span class="c">&lt;!-- pure CSS --&gt;</span>
-&lt;span class="hmm-shimmer"&gt;Thinking&lt;/span&gt;
-&lt;span class="hmm-dots"&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;i&gt;&lt;/i&gt;&lt;/span&gt;
-&lt;p&gt;Streaming answer&lt;span class="hmm-caret"&gt;&lt;/span&gt;&lt;/p&gt;</pre>
-<pre><span class="c">// JS-powered ones (wave, glimmer, rise, roll, scramble)</span>
-import "hmm.css";
-import "hmm.css/auto";   <span class="c">// wires up data-hmm-* attributes</span>
+    <div id="sections"></div>
 
-<span class="c">// or drive them yourself</span>
-import { split, scramble, cycle } from "hmm.css/js";
-const stop = cycle(el, ["Thinking", "Searching", "Reading"]);
-await scramble(el, "Found 12 sources");</pre>
-      <table>
-        <tr><td><code>--hmm-duration</code></td><td>Length of one cycle. Each indicator has its own default.</td></tr>
-        <tr><td><code>--hmm-size</code></td><td>Size of shape indicators: dots, orb, aura, sparkle and the rest.</td></tr>
-        <tr><td><code>--hmm-highlight</code></td><td>Colour of the shimmer sweep. Defaults to a lighter currentColor.</td></tr>
-        <tr><td><code>--hmm-a … --hmm-d</code></td><td>Palette for the multi-colour indicators: aura, sparkle, blob and trace.</td></tr>
-        <tr><td><code>--hmm-radius</code>, <code>--hmm-width</code></td><td>Corner radius and stroke width for <code>.hmm-trace</code>.</td></tr>
-      </table>
-    </div>
-  </section>
+    <section id="usage">
+      <div class="section-head">
+        <div><span class="num">04</span><h2>Three lines <em>to ship it.</em></h2></div>
+        <p>Every indicator inherits <code>currentColor</code>, so it picks up your text colour automatically.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <h3><span class="n">1</span>Install</h3>
+          <p>From npm, or straight from a CDN.</p>
+<pre><span class="t-t">npm i hmm.css</span>
+
+<span class="t-c">&lt;!-- or --&gt;</span>
+&lt;<span class="t-t">link</span> <span class="t-a">rel</span>=<span class="t-s">"stylesheet"</span>
+  <span class="t-a">href</span>=<span class="t-s">"https://unpkg.com/hmm.css"</span>&gt;</pre>
+        </div>
+        <div class="step">
+          <h3><span class="n">2</span>Drop in markup</h3>
+          <p>Most indicators are a single class. No JS needed.</p>
+<pre>&lt;<span class="t-t">span</span> <span class="t-a">class</span>=<span class="t-s">"hmm-shimmer"</span>&gt;
+  Thinking
+&lt;/<span class="t-t">span</span>&gt;
+
+&lt;<span class="t-t">span</span> <span class="t-a">class</span>=<span class="t-s">"hmm-caret"</span>&gt;&lt;/<span class="t-t">span</span>&gt;</pre>
+        </div>
+        <div class="step">
+          <h3><span class="n">3</span>Animate text <span class="mono" style="font-size:11px;color:var(--muted)">optional</span></h3>
+          <p>Use attributes, or call the helpers directly.</p>
+<pre><span class="t-a">import</span> <span class="t-s">"hmm.css/auto"</span>;
+
+<span class="t-a">import</span> { cycle } <span class="t-a">from</span> <span class="t-s">"hmm.css/js"</span>;
+<span class="t-t">cycle</span>(el, [<span class="t-s">"Thinking"</span>, <span class="t-s">"Searching"</span>]);</pre>
+        </div>
+      </div>
+
+      <div class="props">
+        <div><span>Property</span><span>Default</span><span>What it does</span></div>
+        <div><code>--hmm-duration</code><span class="def">per indicator</span><span>Length of one cycle.</span></div>
+        <div><code>--hmm-size</code><span class="def">per indicator</span><span>Size of the shape indicators.</span></div>
+        <div><code>--hmm-highlight</code><span class="def">lighter text</span><span>Colour of the shimmer sweep.</span></div>
+        <div><code>--hmm-a … --hmm-d</code><span class="def">violet, cyan…</span><span>Palette for aura, sparkle, blob and trace.</span></div>
+        <div><code>--hmm-radius / --hmm-width</code><span class="def">12px / 1.5px</span><span>Corner radius and stroke width for <code>.hmm-trace</code>.</span></div>
+      </div>
+    </section>
+  </div>
 </main>
 
-<div class="wrap foot"><span>MIT · hmm.css</span><span>Made for people building with LLMs.</span></div>
-<div class="toast" id="toast">Copied</div>
+<footer class="site">
+  <div class="wrap">
+    <span>hmm.css · MIT</span>
+    <span>Built for people shipping with LLMs.</span>
+  </div>
+</footer>
 
 <script type="module">
 import { init, cycle, scramble } from "./src/hmm.js";
 
-const items = [
-  { name: "Shimmer", note: "light sweeps across text", kind: "text",
-    html: `<span class="hmm-shimmer">Thinking</span>` },
-  { name: "Ellipsis", note: "no layout jitter", kind: "text",
-    html: `<span class="hmm-ellipsis">Thinking</span>` },
-  { name: "Wave", note: "letters ripple", kind: "text", js: true,
-    html: `<span class="hmm-wave" data-hmm-split>Reasoning</span>` },
-  { name: "Glimmer", note: "letters light up in turn", kind: "text", js: true,
-    html: `<span class="hmm-glimmer" data-hmm-split>Searching the web</span>` },
-  { name: "Rise", note: "blur in, drift out", kind: "text", js: true,
-    html: `<span class="hmm-rise" data-hmm-split>Analyzing</span>` },
-  { name: "Roll", note: "rotating status words", kind: "text", js: true,
-    html: `<span data-hmm-cycle="Thinking|Searching|Reading 12 sources|Writing"></span>` },
-  { name: "Scramble", note: "decodes into each phrase", kind: "text", js: true,
-    html: `<span class="mono" data-hmm-cycle="Thinking|Calling tools|Running code" data-hmm-effect="scramble"></span>` },
-  { name: "Caret", note: "block, bar or dot", kind: "text",
-    html: `<span>Writing<span class="hmm-caret"></span></span>` },
-  { name: "Dots", note: "the classic typing bubble", kind: "shape",
-    html: `<span class="hmm-dots"><i></i><i></i><i></i></span>` },
-  { name: "Bars", note: "voice / audio level", kind: "shape",
-    html: `<span class="hmm-bars"><i></i><i></i><i></i><i></i><i></i></span>` },
-  { name: "Matrix", note: "diagonal pulse", kind: "shape",
-    html: `<span class="hmm-matrix"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>` },
-  { name: "Ping", note: "listening", kind: "shape",
-    html: `<span class="hmm-ping"></span>` },
-  { name: "Orbit", note: "two dots chasing", kind: "shape",
-    html: `<span class="hmm-orbit"></span>` },
-  { name: "Orb", note: "breathing sphere", kind: "shape",
-    html: `<span class="hmm-orb" style="--hmm-size:34px"></span>` },
-  { name: "Aura", note: "multi-colour, voice-mode style", kind: "shape",
-    html: `<span class="hmm-aura" style="--hmm-size:44px"></span>` },
-  { name: "Sparkle", note: "the AI glyph, twinkling", kind: "shape",
-    html: `<span class="hmm-sparkle" style="--hmm-size:32px"></span>` },
-  { name: "Blob", note: "slow shape-shift", kind: "shape",
-    html: `<span class="hmm-blob" style="--hmm-size:38px"></span>` },
-  { name: "Trace", note: "light runs round any box", kind: "surface",
-    html: `<div class="hmm-trace" style="--hmm-radius:12px;width:100%;border-radius:12px"><div class="tracebox">Working on it…</div></div>` },
-  { name: "Lines", note: "skeleton while streaming", kind: "surface",
-    html: `<div class="hmm-lines"><i></i><i></i><i></i></div>` },
+const sections = [
+  {
+    id: "text", n: "01", title: "Text", tail: "that thinks.",
+    blurb: "Status lines, streaming carets and words that decode themselves.",
+    items: [
+      { name: "Shimmer", cls: ".hmm-shimmer", html: `<span class="hmm-shimmer">Thinking</span>` },
+      { name: "Ellipsis", cls: ".hmm-ellipsis", html: `<span class="hmm-ellipsis">Thinking</span>` },
+      { name: "Roll", cls: "cycle()", js: true, html: `<span data-hmm-cycle="Thinking|Searching|Reading 12 sources|Writing"></span>` },
+      { name: "Scramble", cls: "scramble()", js: true, html: `<span class="mono" data-hmm-cycle="Thinking|Calling tools|Running code" data-hmm-effect="scramble"></span>` },
+      { name: "Wave", cls: ".hmm-wave", js: true, html: `<span class="hmm-wave" data-hmm-split>Reasoning</span>` },
+      { name: "Glimmer", cls: ".hmm-glimmer", js: true, html: `<span class="hmm-glimmer" data-hmm-split>Searching the web</span>` },
+      { name: "Rise", cls: ".hmm-rise", js: true, html: `<span class="hmm-rise" data-hmm-split>Analyzing</span>` },
+      { name: "Caret", cls: ".hmm-caret", html: `<span>Writing<span class="hmm-caret"></span></span>` },
+    ],
+  },
+  {
+    id: "shapes", n: "02", title: "Shapes", tail: "that listen.",
+    blurb: "Avatars, voice modes and anywhere a bit of life helps.",
+    items: [
+      { name: "Aura", cls: ".hmm-aura", size: "big", html: `<span class="hmm-aura" style="--hmm-size:96px"></span>` },
+      { name: "Dots", cls: ".hmm-dots", html: `<span class="hmm-dots" style="--hmm-size:7px"><i></i><i></i><i></i></span>` },
+      { name: "Bars", cls: ".hmm-bars", html: `<span class="hmm-bars" style="--hmm-size:5px"><i></i><i></i><i></i><i></i><i></i></span>` },
+      { name: "Matrix", cls: ".hmm-matrix", html: `<span class="hmm-matrix" style="--hmm-size:7px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>` },
+      { name: "Ping", cls: ".hmm-ping", html: `<span class="hmm-ping" style="--hmm-size:34px"></span>` },
+      { name: "Orbit", cls: ".hmm-orbit", html: `<span class="hmm-orbit" style="--hmm-size:40px"></span>` },
+      { name: "Orb", cls: ".hmm-orb", html: `<span class="hmm-orb" style="--hmm-size:38px"></span>` },
+      { name: "Sparkle", cls: ".hmm-sparkle", html: `<span class="hmm-sparkle" style="--hmm-size:36px"></span>` },
+      { name: "Blob", cls: ".hmm-blob", html: `<span class="hmm-blob" style="--hmm-size:40px"></span>` },
+    ],
+  },
+  {
+    id: "surfaces", n: "03", title: "Surfaces", tail: "that work.",
+    blurb: "Wrap an existing box or fill the space before the answer arrives.",
+    items: [
+      { name: "Trace", cls: ".hmm-trace", size: "wide",
+        html: `<div class="hmm-trace" style="width:100%;max-width:420px;border-radius:14px;--hmm-radius:14px"><div class="mock-input">Searching 14 sources<span class="hmm-dots"><i></i><i></i><i></i></span></div></div>`,
+        copy: `<div class="hmm-trace" style="--hmm-radius:14px">…</div>` },
+      { name: "Lines", cls: ".hmm-lines", size: "wide",
+        html: `<div class="mock-msg"><span class="av"></span><div class="hmm-lines"><i></i><i></i><i></i></div></div>`,
+        copy: `<div class="hmm-lines"><i></i><i></i><i></i></div>` },
+    ],
+  },
 ];
 
-const grid = document.getElementById("gallery");
-for (const it of items) {
-  const card = document.createElement("article");
-  card.className = "card";
-  card.dataset.kind = it.kind;
-  card.innerHTML = `
-    <div class="stage">${it.html}</div>
-    <footer>
-      <div><h3>${it.name}${it.js ? '<span class="tag">js</span>' : ""}</h3><small>${it.note}</small></div>
-      <button class="ghost">Copy</button>
-    </footer>`;
-  card.querySelector("button").dataset.copy = it.html;
-  grid.append(card);
-}
-init(grid);
+const copyIcon = `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.25" y="5.25" width="8.5" height="8.5" rx="1.75"/><path d="M10.75 5.25V3.5A1.25 1.25 0 0 0 9.5 2.25H3.5A1.25 1.25 0 0 0 2.25 3.5v6a1.25 1.25 0 0 0 1.25 1.25h1.75"/></svg>`;
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 
-// copy
-const toast = document.getElementById("toast");
+const host = document.getElementById("sections");
+let count = 0;
+for (const s of sections) {
+  const sec = document.createElement("section");
+  sec.id = s.id;
+  sec.innerHTML = `
+    <div class="section-head">
+      <div><span class="num">${s.n}</span><h2>${s.title} <em>${s.tail}</em></h2></div>
+      <p>${s.blurb}</p>
+    </div>
+    <div class="grid">${s.items.map((it) => `
+      <article class="card ${it.size || ""}">
+        <span class="idx">${String(++count).padStart(2, "0")}</span>
+        ${it.js ? '<span class="js" title="Uses the JS helper">JS</span>' : ""}
+        <div class="stage">${it.html}</div>
+        <footer>
+          <div><h3>${it.name}</h3><div class="cls">${it.cls}</div></div>
+          <button class="copy" data-copy="${esc(it.copy || it.html)}" aria-label="Copy ${it.name} markup">${copyIcon}<span>Copy</span></button>
+        </footer>
+      </article>`).join("")}
+    </div>`;
+  host.append(sec);
+}
+init(host);
+
+// copy with inline confirmation
 document.addEventListener("click", async (e) => {
   const b = e.target.closest("[data-copy]");
   if (!b) return;
   await navigator.clipboard.writeText(b.dataset.copy);
-  toast.classList.add("on");
-  setTimeout(() => toast.classList.remove("on"), 1200);
+  const label = b.querySelector("span") || b;
+  const prev = label.textContent;
+  b.classList.add("done");
+  label.textContent = "Copied";
+  clearTimeout(b._t);
+  b._t = setTimeout(() => { b.classList.remove("done"); label.textContent = prev; }, 1400);
 });
 
-// filters
-document.querySelectorAll(".chip").forEach((chip) => chip.addEventListener("click", () => {
-  document.querySelectorAll(".chip").forEach((c) => c.setAttribute("aria-pressed", c === chip));
-  grid.querySelectorAll(".card").forEach((card) => {
-    card.hidden = chip.dataset.f !== "all" && card.dataset.kind !== chip.dataset.f;
-  });
-}));
-
-// colour
+// preview colour + theme
 document.querySelectorAll(".sw").forEach((sw) => sw.addEventListener("click", () => {
   document.querySelectorAll(".sw").forEach((s) => s.setAttribute("aria-pressed", s === sw));
   document.documentElement.style.setProperty("--demo", sw.dataset.c);
 }));
-document.documentElement.style.setProperty("--demo", "var(--ink)");
-
-// theme
 document.getElementById("theme").addEventListener("click", () => document.documentElement.classList.toggle("light"));
 
-// chat mock: status cycles, then the answer streams in with a caret
+// nav border once scrolled
+const nav = document.getElementById("nav");
+addEventListener("scroll", () => nav.classList.toggle("scrolled", scrollY > 8), { passive: true });
+
+// hero demo: status cycles, settles, then the answer streams with a caret
 const statusText = document.getElementById("statusText");
 const answer = document.getElementById("answer");
 const sources = [...document.querySelectorAll("#sources span")];
-const reply = "Container queries reached full support, :has() went mainstream, and @property made animatable custom properties practical. That last one is how the trace border on this page works.";
-
+const legend = Object.fromEntries([...document.querySelectorAll(".legend li")].map((li) => [li.dataset.step, li]));
+const mark = (step) => ["status", "done", "stream"].forEach((k) => legend[k].classList.toggle("on", k === step));
+const reply = "Scroll-driven animations shipped everywhere, :has() became the everyday parent selector, and @property made custom properties animatable. That last one powers the trace border below.";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 async function play() {
   for (;;) {
     answer.innerHTML = "";
     sources.forEach((s) => s.classList.remove("on"));
     statusText.className = "hmm-shimmer";
+    mark("status");
     const stop = cycle(statusText, ["Thinking", "Searching the web", "Reading 3 sources"], { interval: 1600 });
     for (const s of sources) { await sleep(1400); s.classList.add("on"); }
     await sleep(300);
     stop();
-    await scramble(statusText, "Thought for 4s", { duration: 500 });
+    mark("done");
+    await scramble(statusText, "Thought for 4s", { duration: 600 });
     statusText.className = "";
+    await sleep(500);
+    mark("stream");
     const p = document.createElement("p");
     const caret = Object.assign(document.createElement("span"), { className: "hmm-caret hmm-caret--dot" });
     answer.append(p);
@@ -312,11 +494,12 @@ async function play() {
     for (let i = 0; i < words.length; i++) {
       p.textContent = words.slice(0, i + 1).join(" ");
       p.append(caret);
-      await sleep(45 + Math.random() * 70);
+      await sleep(40 + Math.random() * 60);
     }
     await sleep(900);
     caret.remove();
-    await sleep(3500);
+    mark(null);
+    await sleep(4000);
   }
 }
 play();
