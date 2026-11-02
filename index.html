@@ -82,7 +82,7 @@
   .theme-seg button { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: var(--muted); }
   .theme-seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 
-  .orb { width: 22px; height: 22px; border-radius: 50%; transition: transform .15s;
+  .orb { flex: none; width: 22px; height: 22px; border-radius: 50%; transition: transform .15s;
     background: radial-gradient(circle at 35% 28%, rgb(255 255 255 / .75), rgb(255 255 255 / 0) 42%), radial-gradient(circle at 50% 115%, rgb(255 255 255 / .35), rgb(255 255 255 / 0) 55%), var(--c);
     box-shadow: inset 0 -2px 4px rgb(0 0 0 / .22), 0 1px 2px rgb(0 0 0 / .18); }
   .orb:hover { transform: scale(1.1); }
@@ -288,6 +288,8 @@
   /* ---------- responsive ---------- */
   @media (max-width: 1200px) { .docs { grid-template-columns: minmax(0, 1fr); } .toc { display: none; } .cards { grid-template-columns: repeat(3, 1fr); } }
   @media (max-width: 960px) {
+    body.nav-open::after { content: ""; position: fixed; inset: 0; z-index: 35; background: rgb(0 0 0 / .25); }
+    .topline .gh span { display: none; }
     .side { transform: translateX(calc(-100% - 20px)); transition: transform .2s; }
     body.nav-open .side { transform: none; }
     .docs { margin-left: 0; padding: 0 20px; }
@@ -305,6 +307,12 @@
     .composer .mic { display: none; }
     .stagebox .make { left: 8px; right: 8px; translate: none; overflow-x: auto; border-radius: 16px; }
     .sec { padding-top: 88px; }
+    .hero h1 br { display: none; }
+    .hero h1 { font-size: 40px; }
+    .orbs-big { gap: 8px; } .orbs-big .orb { width: 36px; height: 36px; }
+    .composer-wrap { padding: 32px 0 24px; }
+    .final { margin-top: 72px; padding: 64px 20px; }
+    .stagebox .make .orb { width: 16px; height: 16px; }
   }
 </style>
 </head>
@@ -826,6 +834,7 @@ document.addEventListener("click", (e) => {
   if (e.target.closest("[data-open-search]")) openK();
   const t = e.target.closest("[data-theme]"); if (t) setTheme(t.dataset.theme === "dark");
   if (e.target.closest("#themeFloat")) setTheme(!isDark());
+  if (e.target === document.body) document.body.classList.remove("nav-open");
 });
 
 /* ---------- command palette ---------- */
