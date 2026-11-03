@@ -7,80 +7,60 @@
 <meta name="description" content="19 copy-paste thinking, streaming and listening states for AI interfaces. Pure CSS, ~3 kB, with a tiny optional JS helper.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/hmm.css">
 <style>
   :root {
-    --bg: #ffffff;
-    --soft: #f7f7f7;
-    --soft-2: #f0f0f0;
-    --card: #ffffff;
-    --line: #ebebeb;
-    --line-2: #e0e0e0;
-    --ink: #0a0a0a;
-    --sub: #525252;
-    --muted: #8a8a8a;
-    --blue: #1d6bff;
-    --blue-soft: #e8f0ff;
-    --demo: #0a0a0a;
-    --t-tag: #c026d3;
-    --t-attr: #2563eb;
-    --t-str: #059669;
-    --t-com: #a3a3a3;
-    --shadow-panel: 0 1px 0 rgb(0 0 0 / .02), 0 1px 12px rgb(0 0 0 / .06), 0 0 1px rgb(0 0 0 / .32);
-    --shadow-btn: 0 1px 2px rgb(0 0 0 / .05);
-    --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    color-scheme: light;
-  }
-  :root.dark {
-    --bg: #0a0a0a;
-    --soft: #141414;
-    --soft-2: #1d1d1d;
-    --card: #101010;
-    --line: #222;
-    --line-2: #2c2c2c;
-    --ink: #f5f5f5;
-    --sub: #b4b4b4;
-    --muted: #7c7c7c;
-    --blue-soft: #14244a;
-    --demo: #f5f5f5;
-    --t-tag: #f0abfc;
-    --t-attr: #93c5fd;
-    --t-str: #6ee7b7;
-    --t-com: #6b6b6b;
-    --shadow-panel: 0 0 0 1px #1f1f1f, 0 1px 12px rgb(0 0 0 / .4);
+    --bg: #08080a;
+    --soft: #101013;
+    --soft-2: #17171b;
+    --card: #0d0d10;
+    --line: #1c1c21;
+    --line-2: #28282f;
+    --ink: #f2f2ee;
+    --sub: #a6a6a0;
+    --muted: #6e6e6a;
+    --accent: #c8f560;
+    --accent-ink: #0b0d05;
+    --accent-soft: rgb(200 245 96 / .12);
+    --demo: #f2f2ee;
+    --t-tag: #c8f560;
+    --t-attr: #9ab8ff;
+    --t-str: #f5c26b;
+    --t-com: #55554f;
+    --shadow-panel: 0 0 0 1px #1d1d22, 0 12px 32px -12px rgb(0 0 0 / .7);
+    --shadow-btn: 0 1px 0 rgb(255 255 255 / .03) inset;
+    --sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --serif: "Instrument Serif", ui-serif, Georgia, serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
     color-scheme: dark;
   }
 
   * { box-sizing: border-box; }
   html, body { margin: 0; }
-  body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss01"; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.5 var(--sans); -webkit-font-smoothing: antialiased; }
   a { color: inherit; text-decoration: none; }
   button, input { font: inherit; color: inherit; }
   button { cursor: pointer; background: none; border: 0; padding: 0; }
   code, pre, kbd { font-family: var(--mono); }
   svg { flex: none; }
-  ::selection { background: color-mix(in oklab, var(--blue) 25%, transparent); }
+  ::selection { background: color-mix(in oklab, var(--accent) 25%, transparent); }
 
   /* ---------- shared ---------- */
   .logo { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; letter-spacing: -.01em; }
-  .logo-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: linear-gradient(180deg, #4d8dff, #1d6bff); box-shadow: inset 0 1px 0 rgb(255 255 255 / .35), 0 1px 2px rgb(29 107 255 / .4); }
-  .logo-mark .hmm-dots { color: #fff; --hmm-size: 3.5px; gap: 2.5px; height: auto; }
+  .logo-mark { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--accent); box-shadow: 0 0 18px -4px rgb(200 245 96 / .5); }
+  .logo-mark .hmm-dots { color: var(--accent-ink); --hmm-size: 3.5px; gap: 2.5px; height: auto; }
 
   .btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; border-radius: 10px; font-weight: 500; font-size: 14px; white-space: nowrap; transition: transform .1s, background .15s; border: 1px solid var(--line-2); background: var(--card); box-shadow: var(--shadow-btn); }
   .btn:hover { background: var(--soft); }
   .btn:active { transform: translateY(1px); }
-  .btn.primary { color: #fff; border-color: transparent; background: linear-gradient(180deg, #3d84ff, #1d6bff); box-shadow: inset 0 1px 0 rgb(255 255 255 / .25), 0 1px 2px rgb(29 107 255 / .35), 0 0 0 1px #1a5fe6; }
-  .btn.primary:hover { background: linear-gradient(180deg, #4a8cff, #2a74ff); }
+  .btn.primary { color: var(--accent-ink); border-color: transparent; background: var(--accent); box-shadow: 0 0 0 1px rgb(200 245 96 / .4), 0 8px 24px -10px rgb(200 245 96 / .55); }
+  .btn.primary:hover { background: #d6fa7d; }
   .gh { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--card); box-shadow: var(--shadow-btn); font-weight: 500; }
   .gh:hover { background: var(--soft); }
   kbd { font-size: 11px; color: var(--muted); background: var(--soft-2); border-radius: 6px; padding: 2px 6px; }
-  .pill-new { font: 600 11px var(--sans); color: var(--blue); background: var(--blue-soft); border-radius: 6px; padding: 2px 6px; }
+  .pill-new { font: 600 11px var(--sans); color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 6px; }
 
-  .theme-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--soft-2); }
-  .theme-seg button { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; color: var(--muted); }
-  .theme-seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .08); }
 
   .orb { flex: none; width: 22px; height: 22px; border-radius: 50%; transition: transform .15s;
     background: radial-gradient(circle at 35% 28%, rgb(255 255 255 / .75), rgb(255 255 255 / 0) 42%), radial-gradient(circle at 50% 115%, rgb(255 255 255 / .35), rgb(255 255 255 / 0) 55%), var(--c);
@@ -101,12 +81,14 @@
   .hero { position: relative; text-align: center; padding: 56px 24px 0; isolation: isolate; }
   .streaks { position: absolute; inset: -72px 0 auto; height: 560px; pointer-events: none; z-index: -1; overflow: hidden; -webkit-mask: linear-gradient(#000 35%, transparent); mask: linear-gradient(#000 35%, transparent); }
   .streaks i { position: absolute; top: -40px; width: 34px; height: 380px; border-radius: 99px; filter: blur(16px); opacity: .55; background: linear-gradient(var(--c), transparent); }
-  .dark .streaks i { opacity: .3; }
-  .streaks::after { content: ""; position: absolute; inset: 0; opacity: .55;
+  .streaks i { opacity: .22; }
+  .streaks::before { content: ""; position: absolute; inset: 0; background: linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 56px 56px, linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 56px 56px; opacity: .6; }
+  .streaks::after { content: ""; position: absolute; inset: 0; opacity: .35;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
   .announce { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 5px; border-radius: 99px; border: 1px solid var(--line); background: var(--card); font-size: 13px; font-weight: 500; margin-bottom: 24px; box-shadow: var(--shadow-btn); }
-  .hero h1 { margin: 0 auto; max-width: 980px; font-size: clamp(42px, 6.4vw, 76px); line-height: 1.12; font-weight: 500; letter-spacing: -.02em; }
-  .rot { display: inline-block; padding-bottom: 8px; background: radial-gradient(circle, var(--line-2) 2.6px, transparent 3px) 0 100% / 13px 8px repeat-x; }
+  .hero h1 { margin: 0 auto; max-width: 980px; font: 400 clamp(48px, 7.4vw, 92px)/1.02 var(--serif); letter-spacing: -.015em; }
+  .hero h1 .rot { font-style: italic; color: var(--accent); }
+  .rot { display: inline-block; }
   .rot .hmm-roll { vertical-align: baseline; }
   .hero p.lede { max-width: 620px; margin: 22px auto 28px; font-size: 16px; line-height: 1.6; color: var(--sub); }
   .cta { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -119,7 +101,7 @@
   .track { display: flex; gap: 20px; width: max-content; animation: scroll 80s linear infinite; padding: 4px 0; }
   .marquee:hover .track { animation-play-state: paused; }
   @keyframes scroll { to { transform: translateX(calc(-50% - 10px)); } }
-  .w { width: 340px; height: 320px; flex: none; border-radius: 24px; background: var(--soft); padding: 20px; display: flex; flex-direction: column; gap: 12px; text-align: left; }
+  .w { width: 340px; height: 320px; flex: none; border-radius: 20px; background: var(--soft); border: 1px solid var(--line); padding: 20px; display: flex; flex-direction: column; gap: 12px; text-align: left; }
   .w h4 { margin: 0; font-size: 13px; font-weight: 500; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
   .w .big { font-size: 26px; font-weight: 500; letter-spacing: -.02em; }
   .w .box { background: var(--card); border-radius: 16px; padding: 14px; box-shadow: 0 1px 2px rgb(0 0 0 / .04); }
@@ -135,9 +117,9 @@
   .showcase .make { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; z-index: 2; }
 
   .sec { padding: 128px 24px 0; text-align: center; }
-  .eyebrow { font: 500 17px var(--mono); margin-bottom: 18px; }
-  .eyebrow .a { color: #ec4899; } .eyebrow .b { color: var(--blue); } .eyebrow .c { color: #a855f7; }
-  .sec h2 { margin: 0 auto; max-width: 720px; font-size: clamp(32px, 4.2vw, 48px); line-height: 1.1; font-weight: 500; letter-spacing: -.025em; }
+  .eyebrow { font: 500 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+  .eyebrow .a, .eyebrow .b, .eyebrow .c { color: var(--accent); }
+  .sec h2 { margin: 0 auto; max-width: 720px; font: 400 clamp(38px, 5vw, 60px)/1.04 var(--serif); letter-spacing: -.01em; }
   .sec > p { max-width: 540px; margin: 16px auto 28px; color: var(--sub); font-size: 16px; line-height: 1.55; }
   .sec > p code { font-size: 14px; background: var(--soft-2); border-radius: 6px; padding: 2px 6px; color: var(--ink); }
 
@@ -153,16 +135,16 @@
   .orbs-big { display: flex; justify-content: center; gap: 14px; margin: 32px 0 24px; }
   .orbs-big .orb { width: 48px; height: 48px; }
   .composer-wrap { position: relative; max-width: 1080px; margin: 0 auto; padding: 48px 0 72px; }
-  .composer-wrap::before { content: ""; position: absolute; inset: 0 6% 10%; border-radius: 50%; background: radial-gradient(closest-side, rgb(0 0 0 / .07), transparent); filter: blur(24px); z-index: -1; }
-  .composer { --hmm-radius: 52px; --hmm-width: 2.5px; --hmm-duration: 2.2s; color: #1d6bff; }
+  .composer-wrap::before { content: ""; position: absolute; inset: 0 6% 10%; border-radius: 50%; background: radial-gradient(closest-side, rgb(200 245 96 / .06), transparent); filter: blur(24px); z-index: -1; }
+  .composer { --hmm-radius: 52px; --hmm-width: 2.5px; --hmm-duration: 2.2s; color: var(--accent); }
   .composer .bar { display: flex; align-items: center; gap: 14px; height: 104px; padding: 0 16px; border-radius: 52px; background: var(--card); box-shadow: 0 1px 2px rgb(0 0 0 / .05), 0 24px 60px -24px rgb(0 0 0 / .2); color: var(--ink); text-align: left; }
   .composer .plus, .composer .mic { width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--line); flex: none; }
   .composer .status { flex: 1; font-size: 28px; color: var(--muted); --hmm-highlight: var(--ink); white-space: nowrap; overflow: hidden; }
-  .composer .stop { width: 72px; height: 72px; border-radius: 50%; flex: none; display: grid; place-items: center; background: linear-gradient(180deg, #3d84ff, #1d6bff); box-shadow: inset 0 1px 0 rgb(255 255 255 / .25); }
-  .composer .stop i { width: 20px; height: 20px; border-radius: 5px; background: #fff; }
+  .composer .stop { width: 72px; height: 72px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--accent); }
+  .composer .stop i { width: 20px; height: 20px; border-radius: 5px; background: var(--accent-ink); }
 
-  .final { margin: 96px 24px 0; padding: 88px 24px; border-radius: 32px; background: var(--soft); text-align: center; position: relative; overflow: hidden; isolation: isolate; }
-  .final h2 { margin: 0 0 14px; font-size: clamp(30px, 4vw, 44px); font-weight: 500; letter-spacing: -.025em; }
+  .final { margin: 96px 24px 0; padding: 88px 24px; border-radius: 28px; background: var(--soft); border: 1px solid var(--line); text-align: center; position: relative; overflow: hidden; isolation: isolate; }
+  .final h2 { margin: 0 0 14px; font: 400 clamp(36px, 4.6vw, 56px)/1.05 var(--serif); }
   .final p { margin: 0 auto 28px; max-width: 460px; color: var(--sub); font-size: 16px; }
   .final .hmm-aura { position: absolute; --hmm-size: 300px; opacity: .3; filter: blur(30px); z-index: -1; }
   footer.site { display: flex; justify-content: space-between; gap: 16px; padding: 32px 24px 40px; color: var(--muted); font-size: 13px; }
@@ -197,7 +179,7 @@
   .crumb b { color: var(--ink); font-weight: 400; }
   .menu-btn { display: none; width: 34px; height: 34px; place-items: center; border-radius: 10px; color: var(--sub); }
 
-  .dmain h1 { margin: 0 0 10px; font-size: 26px; font-weight: 500; letter-spacing: -.02em; display: flex; align-items: center; gap: 10px; }
+  .dmain h1 { margin: 0 0 10px; font: 400 38px/1.1 var(--serif); display: flex; align-items: center; gap: 10px; }
   .dmain .desc { margin: 0 0 32px; font-size: 16px; line-height: 1.5; color: var(--sub); max-width: 38em; }
   .dmain h2 { margin: 56px 0 8px; font-size: 20px; font-weight: 500; letter-spacing: -.015em; scroll-margin-top: 24px; }
   .dmain h3 { margin: 28px 0 8px; font-size: 15px; font-weight: 500; }
@@ -256,16 +238,13 @@
   .toc ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
   .toc a { display: block; padding: 6px 0 6px 16px; margin-left: -1px; border-left: 2px solid transparent; color: var(--muted); font-size: 14px; }
   .toc a:hover { color: var(--ink); }
-  .toc a.on { color: var(--ink); border-left-color: var(--ink); font-weight: 500; }
+  .toc a.on { color: var(--ink); border-left-color: var(--accent); font-weight: 500; }
 
   .dgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .shead { display: flex; align-items: baseline; gap: 10px; margin: 48px 0 16px; scroll-margin-top: 24px; }
   .shead h2 { margin: 0 !important; }
   .shead .n, .shead .s { color: var(--muted); font-size: 15px; }
 
-  .floaters { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 8px; z-index: 20; }
-  .floaters button { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--card); box-shadow: var(--shadow-panel); color: var(--sub); }
-  .floaters button:hover { color: var(--ink); }
 
   .demo-panel { padding: 13px 15px; border-radius: 14px; background: var(--soft); font-size: 14px; color: var(--sub); display: flex; align-items: center; gap: 10px; }
   .demo-panel .hmm-dots { margin-left: auto; --hmm-size: 5px; color: var(--muted); }
@@ -302,7 +281,7 @@
   }
   @media (max-width: 600px) {
     .cards, .dgrid { grid-template-columns: 1fr; }
-    .lnav { gap: 12px; padding: 0 14px; } .lnav .gh span, .lnav .theme-seg { display: none; }
+    .lnav { gap: 12px; padding: 0 14px; } .lnav .gh span { display: none; }
     .w { width: 280px; height: 300px; }
     .composer .mic { display: none; }
     .stagebox .make { left: 8px; right: 8px; translate: none; overflow-x: auto; border-radius: 16px; }
@@ -338,8 +317,6 @@ const COLORS = [["Ink", null], ["Blue", "#1d6bff"], ["Violet", "#7c3aed"], ["Pin
 const I = {
   search: `<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="9" r="5.75"/><path d="m13.5 13.5 3 3"/></svg>`,
   gh: `<svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>`,
-  sun: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.2M8 13.3v1.2M1.5 8h1.2M13.3 8h1.2M3.4 3.4l.85.85M11.75 11.75l.85.85M3.4 12.6l.85-.85M11.75 4.25l.85-.85"/></svg>`,
-  moon: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13.5 9.6A5.75 5.75 0 1 1 6.4 2.5a4.6 4.6 0 0 0 7.1 7.1Z"/></svg>`,
   cube: `<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M10 2.5 16.5 6v8L10 17.5 3.5 14V6L10 2.5Z"/><path d="M3.5 6 10 9.5 16.5 6M10 9.5v8"/></svg>`,
   down: `<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7.25"/><path d="M10 6.5v6.5M7.25 10.5 10 13.25l2.75-2.75"/></svg>`,
   rocket: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M9.5 2.5c2.5-.5 4-.5 4 0s0 1.5-.5 4l-4 4-3-3 3.5-5ZM6 7.5 3.5 7 2 8.5l3 1M8.5 10l.5 2.5L7.5 14l-1-3"/></svg>`,
@@ -453,11 +430,7 @@ const codeBlock = (label, src, lang = "html", extra = "") =>
   `<div class="code ${extra}"><div class="hd"><span>${label}</span><button class="copy" data-copy="${attr(src)}">${I.copy}<span>Copy</span></button></div><pre>${lang === "js" ? hlJS(src) : lang === "sh" ? esc(src) : hlHTML(src)}</pre></div>`;
 function stopCycles(el) { el.querySelectorAll("[data-hmm-cycle]").forEach((n) => n._hmmStop && n._hmmStop()); }
 function mount(el, html) { stopCycles(el); el.innerHTML = html; init(el); }
-const isDark = () => document.documentElement.classList.contains("dark");
 const orbs = (sel) => COLORS.map(([n, c]) => `<button class="orb" style="--c:${c || "var(--ink)"}" data-col="${c || ""}" aria-label="${n}" aria-pressed="${(sel || "") === (c || "")}"></button>`).join("");
-const themeSeg = () => `<div class="theme-seg" role="group" aria-label="Theme">
-  <button data-theme="light" aria-pressed="${!isDark()}" aria-label="Light mode">${I.sun}</button>
-  <button data-theme="dark" aria-pressed="${isDark()}" aria-label="Dark mode">${I.moon}</button></div>`;
 
 /* ---------- landing ---------- */
 function widgets() {
@@ -498,12 +471,11 @@ function landing() {
     <div class="r">
       <button class="search" data-open-search>${I.search}<span>Quick Search</span><kbd>⌘K</kbd></button>
       <a class="gh" href="${GH}">${I.gh}<span>GitHub</span></a>
-      ${themeSeg()}
     </div>
   </header>
 
   <section class="hero">
-    <div class="streaks"><i style="--c:#7aa7ff;left:14%"></i><i style="--c:#f9a8d4;left:23%;height:300px"></i><i style="--c:#c4b5fd;left:61%;height:420px"></i><i style="--c:#93c5fd;left:69%"></i><i style="--c:#f9a8d4;left:78%;height:320px"></i></div>
+    <div class="streaks"><i style="--c:#c8f560;left:18%;height:300px"></i><i style="--c:#6ee7b7;left:31%;height:420px"></i><i style="--c:#c8f560;left:66%"></i><i style="--c:#9ab8ff;left:79%;height:320px"></i></div>
     <a class="announce" href="#/components"><span class="pill-new">New</span>19 components, one stylesheet</a>
     <h1>Loading states for<br><span class="rot"><span data-hmm-cycle="Agent|Chat|Voice|Copilot|Search" data-hmm-interval="2400"></span></span> interfaces</h1>
     <p class="lede">hmm.css is a pure-CSS library of thinking, streaming and listening states for AI products: shimmer text, typing carets, orbs, auras and scramble text. It's about 3 kB and inherits your colours.</p>
@@ -593,7 +565,7 @@ function docsShell() {
     </div>
     <aside class="toc" id="toc"></aside>
   </div>
-  <div class="floaters"><button id="themeFloat" aria-label="Toggle theme">${isDark() ? I.sun : I.moon}</button></div>`;
+`;
 }
 
 const pager = (prev, next) => `<div class="pager">${prev ? `<a href="${prev[0]}"><small>Previous</small><span>← ${prev[1]}</span></a>` : ""}${next ? `<a class="next" href="${next[0]}"><small>Next</small><span>${next[1]} →</span></a>` : ""}</div>`;
@@ -813,7 +785,7 @@ function route() {
   scrollTo({ top: 0, behavior: "instant" });
 }
 
-/* ---------- copy, theme ---------- */
+/* ---------- copy ---------- */
 async function copyText(text, btn) {
   await navigator.clipboard.writeText(text);
   const label = btn.querySelector("span") || btn;
@@ -822,18 +794,9 @@ async function copyText(text, btn) {
   clearTimeout(btn._t);
   btn._t = setTimeout(() => { btn.classList.remove("done"); label.textContent = label.dataset.prev; }, 1400);
 }
-function setTheme(dark) {
-  document.documentElement.classList.toggle("dark", dark);
-  localStorage.setItem("hmm-theme", dark ? "dark" : "light");
-  document.querySelectorAll("[data-theme]").forEach((b) => b.setAttribute("aria-pressed", (b.dataset.theme === "dark") === dark));
-  const f = $("#themeFloat"); if (f) f.innerHTML = dark ? I.sun : I.moon;
-}
-if (localStorage.getItem("hmm-theme") === "dark") document.documentElement.classList.add("dark");
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-copy]"); if (b) copyText(b.dataset.copy, b);
   if (e.target.closest("[data-open-search]")) openK();
-  const t = e.target.closest("[data-theme]"); if (t) setTheme(t.dataset.theme === "dark");
-  if (e.target.closest("#themeFloat")) setTheme(!isDark());
   if (e.target === document.body) document.body.classList.remove("nav-open");
 });
 
