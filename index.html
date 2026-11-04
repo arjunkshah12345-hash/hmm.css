@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>hmm.css — Loading states for AI interfaces</title>
-<meta name="description" content="19 copy-paste thinking, streaming and listening states for AI interfaces. Pure CSS, ~3 kB, with a tiny optional JS helper.">
+<meta name="description" content="29 thinking, streaming and listening states for AI interfaces. One stylesheet, a tiny JS helper, $19 once.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="src/hmm.css">
+<link rel="stylesheet" href="assets/hmm.min.css">
 <style>
   :root {
     --bg: #ffffff;
@@ -300,6 +300,30 @@
     .composer .bar { height: 80px; } .composer { --hmm-radius: 40px; }
     .composer .plus, .composer .mic { width: 52px; height: 52px; } .composer .stop { width: 56px; height: 56px; } .composer .status { font-size: 20px; }
   }
+
+  /* ---------- pro ---------- */
+  .code.locked pre { filter: blur(5px); user-select: none; pointer-events: none; opacity: .55; }
+  .code.locked { position: relative; }
+  .code.locked .unlock { position: absolute; inset: 40px 0 0; display: grid; place-items: center; }
+  .code.locked .unlock a { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 10px; font: 500 13px var(--sans); background: var(--card); border: 1px solid var(--line-2); box-shadow: var(--shadow-panel); }
+  .code.locked .unlock a:hover { background: var(--soft); }
+  .code.locked .copy { display: none; }
+  .split button.lockbtn { color: var(--muted); }
+  .price { max-width: 460px; margin: 32px auto 0; padding: 28px; border-radius: 24px; border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow-panel); text-align: left; }
+  .price .amt { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px; }
+  .price .amt b { font-size: 48px; font-weight: 500; letter-spacing: -.03em; }
+  .price .amt span { color: var(--muted); font-size: 14px; }
+  .price ul { list-style: none; padding: 0; margin: 20px 0 24px; display: grid; gap: 10px; color: var(--sub); font-size: 14.5px; }
+  .price li { display: flex; gap: 10px; align-items: center; }
+  .price li .tick { flex: none; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--blue-soft); color: var(--blue); }
+  .price .btn { width: 100%; justify-content: center; height: 42px; font-size: 15px; }
+  .price .fine { margin: 12px 0 0; font-size: 12.5px; color: var(--muted); text-align: center; }
+  .keybox { display: flex; gap: 8px; margin: 12px 0; }
+  .keybox input { flex: 1; height: 38px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--card); font: 13px var(--mono); min-width: 0; }
+  .notice { padding: 14px 16px; border-radius: 14px; background: var(--soft); border: 1px solid var(--line); color: var(--sub); font-size: 14px; margin: 0 0 16px; }
+  .notice.ok { background: color-mix(in oklab, #16a34a 8%, var(--card)); border-color: color-mix(in oklab, #16a34a 30%, var(--line)); }
+  .notice.err { background: color-mix(in oklab, #ef4444 8%, var(--card)); border-color: color-mix(in oklab, #ef4444 30%, var(--line)); }
+  .pro-badge { display: inline-flex; align-items: center; gap: 6px; height: 24px; padding: 0 9px; border-radius: 99px; font: 500 12px var(--sans); background: var(--blue-soft); color: var(--blue); }
   @media (max-width: 600px) {
     .cards, .dgrid { grid-template-columns: 1fr; }
     .lnav { gap: 12px; padding: 0 14px; } .lnav .gh span, .lnav .theme-seg { display: none; }
@@ -327,10 +351,10 @@
 </div>
 
 <script type="module">
-import { init, cycle, scramble } from "./src/hmm.js";
+import { init } from "./assets/hmm.min.js";
 
-const GH = "https://github.com/arjunkshah12345-hash/hmm.css";
-const CDN = "https://cdn.jsdelivr.net/gh/arjunkshah12345-hash/hmm.css@main/src";
+const WORKER = "https://hmm-pro.arjunkshah21.workers.dev";
+const PRICE = "$19";
 const d3 = "<i></i><i></i><i></i>";
 const COLORS = [["Ink", null], ["Blue", "#1d6bff"], ["Violet", "#7c3aed"], ["Pink", "#ec4899"], ["Red", "#ef4444"], ["Orange", "#f59e0b"], ["Green", "#16a34a"]];
 
@@ -354,6 +378,8 @@ const I = {
   menu: `<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4.5h12M2 8h12M2 11.5h12"/></svg>`,
   check: `<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="m2.5 6.25 2.25 2.25 4.75-4.75"/></svg>`,
   plus: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>`,
+  lock: `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="10" height="7" rx="2"/><path d="M5.25 7V5a2.75 2.75 0 0 1 5.5 0v2"/></svg>`,
+  tag: `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M2.5 2.5h5.25l6 6-5.25 5.25-6-6V2.5Z"/><circle cx="5.5" cy="5.5" r="1" fill="currentColor"/></svg>`,
   mic: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>`,
 };
 const logoMark = `<span class="logo-mark"><span class="hmm-dots">${d3}</span></span>`;
@@ -370,11 +396,11 @@ const C = [
   { id: "roll", name: "Roll", group: "Text", js: true,
     desc: "Status words that roll up to the next one, for showing an agent's steps as they happen.",
     html: (s) => `<span data-hmm-cycle="Thinking|Searching|Reading 12 sources|Writing"${s}></span>`,
-    js_: `import { cycle } from "hmm.css/js";\n\nconst stop = cycle(el, ["Thinking", "Searching", "Writing"]);\nstop(); // when the answer arrives` },
+    js_: `import { cycle } from "./hmm.min.js";\n\nconst stop = cycle(el, ["Thinking", "Searching", "Writing"]);\nstop(); // when the answer arrives` },
   { id: "scramble", name: "Scramble", group: "Text", js: true,
     desc: "Random glyphs resolve into each phrase, left to right. Reads well for tool calls and code.",
     html: (s) => `<span data-hmm-cycle="Thinking|Calling tools|Running code" data-hmm-effect="scramble"${s}></span>`,
-    js_: `import { scramble } from "hmm.css/js";\n\nawait scramble(el, "Thought for 4s", { duration: 600 });` },
+    js_: `import { scramble } from "./hmm.min.js";\n\nawait scramble(el, "Thought for 4s", { duration: 600 });` },
   { id: "wave", name: "Wave", group: "Text", js: true, dur: 1.8,
     desc: "Letters ripple up one after another, like a slow breath.",
     html: (s) => `<span class="hmm-wave" data-hmm-split${s}>Reasoning</span>` },
@@ -387,6 +413,16 @@ const C = [
   { id: "caret", name: "Caret", group: "Text", dur: 1, variants: ["block", "bar", "dot"],
     desc: "A cursor that follows text as it streams in, in block, bar and dot styles.",
     html: (s, v) => `<span${s}>Writing the answer<span class="hmm-caret${v && v !== "block" ? " hmm-caret--" + v : ""}"></span></span>` },
+  { id: "spectrum", name: "Spectrum", group: "Text", dur: 3, noColor: true, isNew: true,
+    desc: "A slow gradient that flows through the letters. For “generating” moments that deserve colour.",
+    html: (s) => `<span class="hmm-spectrum"${s}>Generating</span>` },
+  { id: "reveal", name: "Reveal", group: "Text", js: true, dur: 3.2, isNew: true,
+    desc: "Words blur into focus one at a time, like an answer settling into place.",
+    html: (s) => `<span class="hmm-reveal" data-hmm-split="word"${s}>Here is what I found</span>` },
+  { id: "stream", name: "Stream", group: "Text", js: true, isNew: true,
+    desc: "Tokens arrive in uneven chunks behind a caret, the way a real model streams.",
+    html: (s) => `<span data-hmm-stream="The release adds streaming, retries and a faster cache."${s}></span>`,
+    js_: `import { stream } from "./hmm.min.js";\n\nconst stop = stream(el, answer, { speed: 32 });\nstop(); // cancel mid-stream` },
   { id: "dots", name: "Dots", group: "Shapes", dur: 1.2, size: [6, 10, 9],
     desc: "The classic typing bubble: three dots that hop in sequence.",
     html: (s) => `<span class="hmm-dots"${s}>\n  ${d3}\n</span>` },
@@ -414,6 +450,18 @@ const C = [
   { id: "blob", name: "Blob", group: "Shapes", dur: 4, size: [28, 88, 64], noColor: true,
     desc: "A slow, shape-shifting gradient blob.",
     html: (s) => `<span class="hmm-blob"${s}></span>` },
+  { id: "waveform", name: "Waveform", group: "Shapes", dur: 1.15, size: [3, 5, 4], isNew: true,
+    desc: "A twelve-bar voice waveform, louder in the middle. For dictation and spoken replies.",
+    html: (s) => `<span class="hmm-waveform"${s}>\n  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>\n</span>` },
+  { id: "comet", name: "Comet", group: "Shapes", dur: 0.9, size: [24, 56, 44], isNew: true,
+    desc: "A spinner with a tail that fades out behind it.",
+    html: (s) => `<span class="hmm-comet"${s}></span>` },
+  { id: "radar", name: "Radar", group: "Shapes", dur: 2.4, size: [40, 110, 84], isNew: true,
+    desc: "A sweeping beam that lights up a blip. For scanning, indexing and searching.",
+    html: (s) => `<span class="hmm-radar"${s}></span>` },
+  { id: "helix", name: "Helix", group: "Shapes", dur: 1.8, size: [5, 8, 7], isNew: true,
+    desc: "Two strands twisting round each other, for long-running jobs.",
+    html: (s) => `<span class="hmm-helix"${s}>\n  <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>\n</span>` },
   { id: "trace", name: "Trace", group: "Surfaces", dur: 2.6, surface: true,
     desc: "A light that runs round the border of any box: a card, an input or a tool-call row.",
     html: (s) => `<div class="hmm-trace"${s || ' style="--hmm-radius:14px"'}>\n  <div class="demo-panel">Searching 14 sources <span class="hmm-dots">${d3}</span></div>\n</div>`,
@@ -422,6 +470,16 @@ const C = [
     desc: "Skeleton lines that hold the space before the answer arrives.",
     html: (s) => `<div class="demo-msg"><span class="av"></span><div class="hmm-lines"${s}>${d3}</div></div>`,
     code: (s) => `<div class="hmm-lines"${s}>\n  ${d3}\n</div>` },
+  { id: "glow", name: "Glow", group: "Surfaces", dur: 4, surface: true, noColor: true, isNew: true,
+    desc: "A coloured ring and soft bloom around any box. The “AI is working on this” input.",
+    html: (s) => `<div class="hmm-glow"${s}>\n  <div class="demo-panel">Ask anything…</div>\n</div>`,
+    code: (s) => `<div class="hmm-glow"${s}>\n  <${"!"}-- a child with its own background -->\n</div>` },
+  { id: "progress", name: "Progress", group: "Surfaces", dur: 1.6, size: [3, 4, 3], surface: true, isNew: true,
+    desc: "An indeterminate bar for when you know it's working but not how long it'll take.",
+    html: (s) => `<span class="hmm-progress"${s}></span>` },
+  { id: "steps", name: "Steps", group: "Surfaces", size: [14, 16, 14], surface: true, isNew: true,
+    desc: "An agent's plan as a checklist: done, working on it, and still to do.",
+    html: (s) => `<ol class="hmm-steps"${s}>\n  <li data-state="done">Read project files</li>\n  <li data-state="done">Searched the docs</li>\n  <li data-state="active">Running tests</li>\n  <li>Open pull request</li>\n</ol>` },
 ];
 const byId = Object.fromEntries(C.map((c) => [c.id, c]));
 const GROUPS = [["Text", "Status lines, carets and words that decode themselves."], ["Shapes", "Avatars, voice modes and spinners with character."], ["Surfaces", "Wrap a box, or hold the space before the answer."]];
@@ -429,7 +487,8 @@ const cardPreview = (c) => {
   const s = c.size ? ` style="--hmm-size:${c.size[2]}px"` : "";
   return c.surface ? `<div class="fit">${c.html("")}</div>` : c.html(s);
 };
-const cardHTML = (c) => `<a class="card" href="#/c/${c.id}"><div class="pv">${cardPreview(c)}</div><div class="meta"><h3>${c.name}${c.js ? '<span class="pill-new">JS</span>' : ""}</h3><p>${c.desc}</p></div></a>`;
+const pill = (c) => c.isNew ? '<span class="pill-new">New</span>' : c.js ? '<span class="pill-new">JS</span>' : "";
+const cardHTML = (c) => `<a class="card" href="#/c/${c.id}"><div class="pv">${cardPreview(c)}</div><div class="meta"><h3>${c.name}${pill(c)}</h3><p>${c.desc}</p></div></a>`;
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -449,9 +508,30 @@ function hlJS(src) {
     com ? `<span class="t-com">${esc(com)}</span>` : str ? `<span class="t-str">${esc(str)}</span>` : kw ? `<span class="t-kw">${kw}</span>` : esc(rest));
 }
 const attr = (s) => esc(s).replace(/"/g, "&quot;");
-const codeBlock = (label, src, lang = "html", extra = "") =>
-  `<div class="code ${extra}"><div class="hd"><span>${label}</span><button class="copy" data-copy="${attr(src)}">${I.copy}<span>Copy</span></button></div><pre>${lang === "js" ? hlJS(src) : lang === "sh" ? esc(src) : hlHTML(src)}</pre></div>`;
-function stopCycles(el) { el.querySelectorAll("[data-hmm-cycle]").forEach((n) => n._hmmStop && n._hmmStop()); }
+/* Component code is for license holders. Pass "free" in extra for setup snippets anyone can read. */
+const codeBlock = (label, src, lang = "html", extra = "") => {
+  const body = lang === "js" ? hlJS(src) : lang === "sh" ? esc(src) : hlHTML(src);
+  if (!unlocked() && !extra.includes("free"))
+    return `<div class="code locked ${extra}"><div class="hd"><span>${label}</span><span class="pro-badge">${I.lock}Pro</span></div><pre aria-hidden="true">${body}</pre><div class="unlock"><a href="#/pricing">${I.lock}Unlock the code · ${PRICE}</a></div></div>`;
+  return `<div class="code ${extra}"><div class="hd"><span>${label}</span><button class="copy" data-copy="${attr(src)}">${I.copy}<span>Copy</span></button></div><pre>${body}</pre></div>`;
+};
+
+/* ---------- license ---------- */
+const LK = "hmm-license";
+let license = localStorage.getItem(LK);
+function unlocked() { return !!license; }
+function setLicense(k) { license = k; if (k) localStorage.setItem(LK, k); else localStorage.removeItem(LK); }
+const dlURL = () => `${WORKER}/download?key=${encodeURIComponent(license)}`;
+async function api(path) {
+  const r = await fetch(WORKER + path);
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || `Request failed (${r.status})`);
+  return j;
+}
+const verifyKey = (k) => api(`/verify?key=${encodeURIComponent(k)}`).then((j) => j.ok === true);
+/* Re-check a stored key in the background; drop it only on a definite "no". */
+if (license) verifyKey(license).then((ok) => { if (!ok) { setLicense(null); shell = null; route(); } }, () => {});
+function stopCycles(el) { el.querySelectorAll("[data-hmm-cycle], [data-hmm-stream]").forEach((n) => n._hmmStop && n._hmmStop()); }
 function mount(el, html) { stopCycles(el); el.innerHTML = html; init(el); }
 const isDark = () => document.documentElement.classList.contains("dark");
 const orbs = (sel) => COLORS.map(([n, c]) => `<button class="orb" style="--c:${c || "var(--ink)"}" data-col="${c || ""}" aria-label="${n}" aria-pressed="${(sel || "") === (c || "")}"></button>`).join("");
@@ -490,28 +570,28 @@ function widgets() {
 }
 
 function landing() {
-  const featured = ["shimmer", "roll", "dots", "aura", "scramble", "orb", "trace", "sparkle", "wave", "bars", "caret", "lines"].map((id) => byId[id]);
+  const featured = ["shimmer", "stream", "spectrum", "aura", "glow", "steps", "waveform", "radar", "scramble", "orb", "trace", "helix"].map((id) => byId[id]);
   return `
   <header class="lnav">
     <a class="logo" href="#/">${logoMark}hmm.css</a>
-    <nav><a href="#/components">Components</a><a href="#/installation">Docs</a><a href="#/theming">Theming</a></nav>
+    <nav><a href="#/components">Components</a><a href="#/installation">Docs</a><a href="#/theming">Theming</a><a href="#/pricing">Pricing</a></nav>
     <div class="r">
       <button class="search" data-open-search>${I.search}<span>Quick Search</span><kbd>⌘K</kbd></button>
-      <a class="gh" href="${GH}">${I.gh}<span>GitHub</span></a>
+      ${proLink()}
       ${themeSeg()}
     </div>
   </header>
 
   <section class="hero">
     <div class="streaks"><i style="--c:#7aa7ff;left:14%"></i><i style="--c:#f9a8d4;left:23%;height:300px"></i><i style="--c:#c4b5fd;left:61%;height:420px"></i><i style="--c:#93c5fd;left:69%"></i><i style="--c:#f9a8d4;left:78%;height:320px"></i></div>
-    <a class="announce" href="#/components"><span class="pill-new">New</span>19 components, one stylesheet</a>
+    <a class="announce" href="#/components"><span class="pill-new">New</span>10 new components, 29 in all</a>
     <h1>Loading states for<br><span class="rot"><span data-hmm-cycle="Agent|Chat|Voice|Copilot|Search" data-hmm-interval="2400"></span></span> interfaces</h1>
-    <p class="lede">hmm.css is a pure-CSS library of thinking, streaming and listening states for AI products: shimmer text, typing carets, orbs, auras and scramble text. It's about 3 kB and inherits your colours.</p>
+    <p class="lede">hmm.css is a library of thinking, streaming and listening states for AI products: shimmer text, streaming carets, orbs, waveforms, agent steps and glowing inputs. One stylesheet, about 4 kB gzipped, and it inherits your colours.</p>
     <div class="cta">
       <a class="btn primary" href="#/components">${I.cube}Browse components</a>
-      <a class="btn" href="#/installation">${I.down}Get started</a>
+      <a class="btn" href="#/pricing">${I.tag}Get it for ${PRICE}</a>
     </div>
-    <div class="facts"><span>Pure CSS <small>3 kB</small></span><span>Dependencies <small>0</small></span><span>Reduced motion <small>built in</small></span><span>License <small>MIT</small></span></div>
+    <div class="facts"><span>Components <small>${C.length}</small></span><span>Dependencies <small>0</small></span><span>Reduced motion <small>built in</small></span><span>Price <small>${PRICE} once</small></span></div>
   </section>
 
   <section class="showcase">
@@ -520,10 +600,10 @@ function landing() {
   </section>
 
   <section class="sec">
-    <div class="eyebrow"><span class="a">npm</span> <span class="b">i</span> <span class="c">hmm.css</span></div>
+    <div class="eyebrow"><span class="a">${C.length}</span> <span class="b">components,</span> <span class="c">one stylesheet</span></div>
     <h2>Every kind of wait, ready to paste</h2>
     <p>Thinking, searching, calling tools, listening, streaming. One class each, no framework required.</p>
-    <div class="cta"><a class="btn primary" href="#/installation">${I.down}Install for free</a><a class="btn" href="#/components">${I.cube}Browse all components</a></div>
+    <div class="cta"><a class="btn primary" href="#/pricing">${I.tag}Get hmm Pro · ${PRICE}</a><a class="btn" href="#/components">${I.cube}Browse all components</a></div>
     <div class="cards">${featured.map(cardHTML).join("")}</div>
   </section>
 
@@ -547,10 +627,10 @@ function landing() {
   <section class="final">
     <span class="hmm-aura" style="left:-80px;top:-100px"></span><span class="hmm-aura" style="right:-80px;bottom:-120px"></span>
     <h2>Make the wait feel like thinking</h2>
-    <p>Free, open source, and small enough to paste into any project.</p>
-    <div class="cta"><a class="btn primary" href="#/installation">${I.down}Get started</a><a class="btn" href="${GH}">${I.gh}Star on GitHub</a></div>
+    <p>All ${C.length} components for ${PRICE}, once. Use them in every project you ship.</p>
+    <div class="cta"><a class="btn primary" href="#/pricing">${I.tag}Get hmm Pro</a><a class="btn" href="#/components">${I.cube}Browse components</a></div>
   </section>
-  <footer class="site"><span>hmm.css · MIT</span><span><a href="${GH}">GitHub</a> · <a href="#/components">Components</a> · <a href="#/installation">Docs</a></span></footer>`;
+  <footer class="site"><span>hmm.css · Commercial license</span><span><a href="#/pricing">Pricing</a> · <a href="#/components">Components</a> · <a href="#/installation">Docs</a> · <a href="#/license">Enter key</a></span></footer>`;
 }
 
 function bindLanding(root) {
@@ -568,7 +648,8 @@ function bindLanding(root) {
 }
 
 /* ---------- docs ---------- */
-const DOC_LINKS = [["#/installation", "Installation", I.dl], ["#/theming", "Theming", I.palette], ["#/components", "Components", I.grid]];
+const DOC_LINKS = [["#/installation", "Installation", I.dl], ["#/theming", "Theming", I.palette], ["#/components", "Components", I.grid], ["#/pricing", "Pricing", I.tag]];
+const proLink = () => unlocked() ? `<a class="gh" href="#/license">${I.check}<span>Pro</span></a>` : `<a class="gh" href="#/pricing">${I.tag}<span>Get Pro</span></a>`;
 function docsShell() {
   return `
   <aside class="side" id="side">
@@ -579,7 +660,7 @@ function docsShell() {
         <a href="#/">${I.rocket}Overview</a>${DOC_LINKS.map(([h, l, ic]) => `<a href="${h}" data-href="${h}">${ic}${l}</a>`).join("")}
       </div></div>
       ${GROUPS.map(([g]) => `<div class="grp"><button>${g} ${I.chev}</button><div class="tree">
-        ${C.filter((c) => c.group === g).map((c) => `<a href="#/c/${c.id}" data-href="#/c/${c.id}">${c.name}${c.js ? '<span class="pill-new">JS</span>' : ""}</a>`).join("")}
+        ${C.filter((c) => c.group === g).map((c) => `<a href="#/c/${c.id}" data-href="#/c/${c.id}">${c.name}${pill(c)}</a>`).join("")}
       </div></div>`).join("")}
     </nav>
   </aside>
@@ -587,7 +668,7 @@ function docsShell() {
     <div class="dmain">
       <div class="topline">
         <div class="crumb"><button class="menu-btn" id="menu" aria-label="Menu">${I.menu}</button>${logoMark}<span>hmm.css</span><span>›</span><span id="crumbs" style="display:flex;gap:8px"></span></div>
-        <a class="gh" href="${GH}">${I.gh}<span>GitHub</span></a>
+        ${proLink()}
       </div>
       <div id="content"></div>
     </div>
@@ -617,22 +698,23 @@ function installPage() {
   return {
     crumbs: "<b>Installation</b>",
     html: `<h1>Installation</h1>
-    <p class="desc">One stylesheet. Add the JS helper only if you use the per-letter or text-swapping effects.</p>
+    <p class="desc">One stylesheet. Add the JS helper only if you use the per-letter, streaming or text-swapping effects.</p>
+    <h2 id="download">Download</h2>
+    <p>${unlocked() ? "Your license is active on this device." : `Buy a license on the <a href="#/pricing">pricing page</a> and you'll get a key and a download straight away.`} The zip holds <code>dist/hmm.min.css</code>, <code>dist/hmm.min.js</code> and the readable sources in <code>src/</code>.</p>
+    ${unlocked() ? `<p><a class="btn primary" href="${dlURL()}">${I.dl}Download hmm Pro</a></p>` : ""}
     <h2 id="css">Add the CSS</h2>
-    <p>From the CDN:</p>${codeBlock("index.html", `<link rel="stylesheet" href="${CDN}/hmm.css">`)}
-    <p>Or from npm:</p>${codeBlock("terminal", "npm i hmm.css", "sh")}${codeBlock("main.js", `import "hmm.css";`, "js")}
+    <p>Copy <code>hmm.min.css</code> into your project and link it once.</p>${codeBlock("index.html", `<link rel="stylesheet" href="/hmm.min.css">`, "html", "free")}
     <h2 id="markup">Drop in markup</h2>
     <p>Most components are a single class and need no JavaScript.</p>
-    ${codeBlock("index.html", `<span class="hmm-shimmer">Thinking</span>\n\n<p>Streaming answer<span class="hmm-caret"></span></p>`)}
+    ${codeBlock("index.html", `<span class="hmm-shimmer">Thinking</span>\n\n<p>Streaming answer<span class="hmm-caret"></span></p>`, "html", "free")}
     <h2 id="js">Text effects</h2>
-    <p>Wave, Glimmer, Rise, Roll and Scramble need the helper. The auto entry wires up every <code>data-hmm-*</code> attribute on load.</p>
-    ${codeBlock("main.js", `import "hmm.css/auto";`, "js")}
-    ${codeBlock("index.html", `<span class="hmm-wave" data-hmm-split>Reasoning</span>\n<span data-hmm-cycle="Thinking|Searching|Writing"></span>`)}
-    <p>Without a bundler:</p>${codeBlock("index.html", `<script type="module" src="${CDN}/auto.js"><\/script>`)}
+    <p>Wave, Glimmer, Rise, Reveal, Roll, Scramble and Stream need the helper. <code>init()</code> wires up every <code>data-hmm-*</code> attribute on the page.</p>
+    ${codeBlock("index.html", `<script type="module">\n  import { init } from "/hmm.min.js";\n  init();\n<\/script>`, "html", "free")}
     <h2 id="api">API</h2>
     <table><tr><th>Function</th><th>What it does</th></tr>
-      <tr><td><code>split(el, text?)</code></td><td>Wraps each character for Wave, Glimmer and Rise.</td></tr>
+      <tr><td><code>split(el, text?, { by })</code></td><td>Wraps each character, or each word with <code>by: "word"</code>, for Wave, Glimmer, Rise and Reveal.</td></tr>
       <tr><td><code>scramble(el, text, { duration })</code></td><td>Decodes from random glyphs into <code>text</code>. Returns a promise.</td></tr>
+      <tr><td><code>stream(el, text, { speed, loop })</code></td><td>Types <code>text</code> in uneven token-sized chunks behind a caret. Returns <code>stop()</code>.</td></tr>
       <tr><td><code>cycle(el, words, { interval, effect })</code></td><td>Rotates through words using <code>"roll"</code> or <code>"scramble"</code>. Returns <code>stop()</code>.</td></tr>
       <tr><td><code>init(root?)</code></td><td>Wires up <code>data-hmm-*</code> attributes inside <code>root</code>.</td></tr></table>
     ${pager(["#/", "Overview"], ["#/theming", "Theming"])}`,
@@ -645,13 +727,13 @@ function themingPage() {
     html: `<h1>Theming</h1>
     <p class="desc">Every component reads <code>currentColor</code>, so it matches the text around it. Everything else is a custom property.</p>
     <h2 id="example">Example</h2>
-    ${codeBlock("index.html", `<span class="hmm-dots" style="color:#1d6bff; --hmm-size:8px; --hmm-duration:1.6s">\n  ${d3}\n</span>`)}
+    ${codeBlock("index.html", `<span class="hmm-dots" style="color:#1d6bff; --hmm-size:8px; --hmm-duration:1.6s">\n  ${d3}\n</span>`, "html", "free")}
     <h2 id="variables">Variables</h2>
     <table><tr><th>Property</th><th>Default</th><th>What it does</th></tr>
       <tr><td><code>--hmm-duration</code></td><td><span class="def">per component</span></td><td>Length of one cycle.</td></tr>
       <tr><td><code>--hmm-size</code></td><td><span class="def">per component</span></td><td>Size of the shape components.</td></tr>
       <tr><td><code>--hmm-highlight</code></td><td><span class="def">lighter text</span></td><td>Colour of the shimmer sweep.</td></tr>
-      <tr><td><code>--hmm-a</code> … <code>--hmm-d</code></td><td><span class="def">palette</span></td><td>Colours for Aura, Sparkle, Blob and Trace.</td></tr>
+      <tr><td><code>--hmm-a</code> … <code>--hmm-d</code></td><td><span class="def">palette</span></td><td>Colours for Aura, Sparkle, Blob, Trace, Spectrum and Glow.</td></tr>
       <tr><td><code>--hmm-radius</code></td><td><span class="def">12px</span></td><td>Corner radius of Trace.</td></tr>
       <tr><td><code>--hmm-width</code></td><td><span class="def">1.5px</span></td><td>Stroke width of Trace.</td></tr></table>
     <h2 id="a11y">Accessibility</h2>
@@ -662,6 +744,98 @@ function themingPage() {
   };
 }
 
+const FEATURES = [`All ${C.length} components, and every one added later`, "Readable source plus minified builds", "Use in unlimited personal and client projects", "One payment. No subscription"];
+function buyCard() {
+  return `<div class="price">
+    <div class="amt"><b>${PRICE}</b><span>one time · USD</span></div>
+    <div class="muted" style="font-size:14px">hmm Pro, for one person or one company.</div>
+    <ul>${FEATURES.map((f) => `<li><span class="tick">${I.check}</span>${f}</li>`).join("")}</ul>
+    ${unlocked() ? `<a class="btn primary" href="${dlURL()}">${I.dl}Download hmm Pro</a><p class="fine">You already own it. <a href="#/license" style="text-decoration:underline">Manage your key</a></p>`
+      : `<a class="btn primary" href="${WORKER}/checkout">${I.tag}Buy for ${PRICE}</a><p class="fine">Secure checkout by Stripe. Your key and download appear right after payment.</p>`}
+  </div>`;
+}
+
+function pricingPage() {
+  return {
+    crumbs: "<b>Pricing</b>",
+    html: `<h1>Pricing</h1>
+    <p class="desc">One price for the whole library. Pay once and keep every update.</p>
+    ${buyCard()}
+    <h2 id="faq">Questions</h2>
+    <table><tr><th>Question</th><th>Answer</th></tr>
+      <tr><td>What do I get?</td><td>A zip with the stylesheet, the JS helper and readable sources, plus a key that unlocks the code on this site.</td></tr>
+      <tr><td>Where can I use it?</td><td>Any number of your own or your clients' products. You can't resell or redistribute the source itself.</td></tr>
+      <tr><td>Lost your key?</td><td>The Stripe receipt email has your order. Reply to it and we'll send the key again.</td></tr>
+      <tr><td>Already bought it?</td><td><a href="#/license" style="text-decoration:underline">Enter your key</a> to unlock this device.</td></tr></table>`,
+  };
+}
+
+function keyPanel() {
+  return `<div class="keybox"><input id="keyIn" value="${attr(license || "")}" placeholder="hmm_…" spellcheck="false" autocomplete="off" aria-label="License key"><button class="btn" id="keyCopy">${I.copy}Copy</button></div>
+    <p style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn primary" href="${dlURL()}">${I.dl}Download hmm Pro</a><a class="btn" href="#/components">${I.cube}Browse components</a></p>`;
+}
+
+function licensePage() {
+  return {
+    crumbs: "<b>License</b>",
+    html: `<h1>Your license</h1>
+    <p class="desc">${unlocked() ? "This device is unlocked. Keep the key somewhere safe so you can unlock other browsers." : "Paste the key from your purchase to unlock the code on this device."}</p>
+    <div id="keyMsg"></div>
+    ${unlocked() ? keyPanel() + `<p><button class="btn" id="keyForget">Remove from this device</button></p>`
+      : `<div class="keybox"><input id="keyIn" placeholder="hmm_…" spellcheck="false" autocomplete="off" aria-label="License key"><button class="btn primary" id="keyGo">Unlock</button></div>
+      <p class="muted" style="font-size:14px">No key yet? <a href="#/pricing" style="text-decoration:underline">Get hmm Pro for ${PRICE}</a>.</p>`}`,
+    after: bindKey,
+  };
+}
+
+function thanksPage() {
+  return {
+    crumbs: "<b>Thanks</b>",
+    html: `<h1>Thanks for buying hmm Pro</h1>
+    <p class="desc">Here's your key and download.</p>
+    <div id="claim"><div class="notice"><span class="hmm-shimmer">Confirming your payment</span> <span class="hmm-ellipsis"></span></div></div>`,
+    after: claim,
+  };
+}
+
+async function claim() {
+  const box = $("#claim");
+  const sid = new URLSearchParams(location.search).get("session_id");
+  if (!sid) {
+    box.innerHTML = unlocked() ? keyPanel() : `<div class="notice err">There's no order on this page. If you've paid, open the link from your Stripe receipt or <a href="#/license" style="text-decoration:underline">enter your key</a>.</div>`;
+    bindKey(); return;
+  }
+  try {
+    const { key, email } = await api(`/claim?session_id=${encodeURIComponent(sid)}`);
+    setLicense(key);
+    history.replaceState(null, "", location.pathname + location.hash);
+    shell = null; route();
+    $("#claim").innerHTML = `<div class="notice ok">Payment confirmed${email ? ` for <b>${esc(email)}</b>` : ""}. Save this key: you'll need it to unlock other browsers.</div>${keyPanel()}`;
+    bindKey();
+  } catch (err) {
+    box.innerHTML = `<div class="notice err">We couldn't confirm the payment yet (${esc(err.message)}). Give it a few seconds and <a href="" style="text-decoration:underline">reload</a>.</div>`;
+  }
+}
+
+function bindKey() {
+  const msg = (t, cls) => { const m = $("#keyMsg"); if (m) m.innerHTML = `<div class="notice ${cls}">${t}</div>`; };
+  $("#keyCopy")?.addEventListener("click", (e) => copyText($("#keyIn").value, e.currentTarget));
+  $("#keyForget")?.addEventListener("click", () => { setLicense(null); shell = null; route(); });
+  const go = $("#keyGo"), inp = $("#keyIn");
+  if (!go) return;
+  const submit = async () => {
+    const k = inp.value.trim(); if (!k) return;
+    go.disabled = true; go.textContent = "Checking…";
+    try {
+      if (!(await verifyKey(k))) throw new Error("That key isn't valid.");
+      setLicense(k); shell = null; route();
+      msg("Unlocked. Every code block on the site is now yours to copy.", "ok");
+    } catch (err) { msg(esc(err.message), "err"); go.disabled = false; go.textContent = "Unlock"; }
+  };
+  go.addEventListener("click", submit);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(); });
+}
+
 function componentPage(c) {
   const i = C.indexOf(c);
   const prev = i > 0 ? [`#/c/${C[i - 1].id}`, C[i - 1].name] : ["#/components", "Components"];
@@ -670,7 +844,7 @@ function componentPage(c) {
   if (c.size) vars.push(["--hmm-size", c.size[0] + "px", "Size of the component."]);
   if (c.dur) vars.push(["--hmm-duration", c.dur + "s", "Length of one cycle."]);
   if (c.id === "shimmer") vars.push(["--hmm-highlight", "lighter text", "Colour of the sweep."]);
-  if (["aura", "sparkle", "blob", "trace"].includes(c.id)) vars.push(["--hmm-a … --hmm-d", "palette", "Gradient colours."]);
+  if (["aura", "sparkle", "blob", "trace", "spectrum", "glow"].includes(c.id)) vars.push(["--hmm-a … --hmm-d", "palette", "Gradient colours."]);
   if (c.id === "trace") vars.push(["--hmm-radius", "12px", "Corner radius, to match your box."], ["--hmm-width", "1.5px", "Stroke width."]);
   return {
     crumbs: `<span>Components</span><span>›</span><b>${c.name}</b>`,
@@ -678,12 +852,12 @@ function componentPage(c) {
     <p class="desc">${c.desc}</p>
     <div class="bar2" id="preview">
       <div class="seg" role="tablist"><button role="tab" aria-selected="true" data-tab="preview">${I.eye}Preview</button><button role="tab" aria-selected="false" data-tab="code">${I.code}Code</button></div>
-      <div class="split"><button id="copyMain">${I.copy}<span>Copy code</span></button><button id="reset" aria-label="Reset controls" title="Reset">↺</button></div>
+      <div class="split">${unlocked() ? `<button id="copyMain">${I.copy}<span>Copy code</span></button>` : `<button id="copyMain" class="lockbtn">${I.lock}<span>Unlock code</span></button>`}<button id="reset" aria-label="Reset controls" title="Reset">↺</button></div>
     </div>
     <div id="pane"></div>
     <h2 id="installation">Installation</h2>
-    <p>Add the stylesheet${c.js ? " and the helper" : ""} once, anywhere in your page.</p>
-    ${codeBlock("index.html", `<link rel="stylesheet" href="${CDN}/hmm.css">` + (c.js ? `\n<script type="module" src="${CDN}/auto.js"><\/script>` : ""))}
+    <p>Add the stylesheet${c.js ? " and the helper" : ""} from your download once, anywhere in your page.</p>
+    ${codeBlock("index.html", `<link rel="stylesheet" href="/hmm.min.css">` + (c.js ? "\n" + `<script type="module">\n  import { init } from "/hmm.min.js";\n  init();\n<\/script>` : ""), "html", "free")}
     <h2 id="usage">Usage</h2>
     <p>This snippet follows the controls above.</p>
     <div id="usageCode"></div>
@@ -727,7 +901,7 @@ function bindComponent(c) {
   function refresh() {
     const stage = $("#stage");
     if (stage) {
-      const root = c.surface ? stage.querySelector(".hmm-trace, .hmm-lines") : stage.firstElementChild;
+      const root = c.surface ? stage.querySelector(".hmm-trace, .hmm-lines, .hmm-glow, .hmm-progress, .hmm-steps") : stage.firstElementChild;
       const m = styleAttr().match(/style="([^"]*)"/);
       root.setAttribute("style", m ? m[1] : c.id === "trace" ? "--hmm-radius:14px" : "");
     }
@@ -750,7 +924,7 @@ function bindComponent(c) {
     draw();
   }));
   $("#reset").addEventListener("click", () => { s = fresh(); draw(); });
-  $("#copyMain").addEventListener("click", (e) => copyText(snippet(), e.currentTarget));
+  $("#copyMain").addEventListener("click", (e) => unlocked() ? copyText(snippet(), e.currentTarget) : (location.hash = "#/pricing"));
   draw();
 }
 
@@ -797,7 +971,8 @@ function route() {
   }
   const m = h.match(/^\/c\/([\w-]+)/);
   const comp = m && byId[m[1]];
-  const page = comp ? componentPage(comp) : h === "/installation" ? installPage() : h === "/theming" ? themingPage() : componentsPage();
+  const PAGES = { "/installation": installPage, "/theming": themingPage, "/pricing": pricingPage, "/license": licensePage, "/thanks": thanksPage };
+  const page = comp ? componentPage(comp) : (PAGES[h] || componentsPage)();
   $("#crumbs").innerHTML = page.crumbs;
   const content = $("#content");
   stopCycles(content);
@@ -805,11 +980,11 @@ function route() {
   init(content);
   page.after && page.after();
   buildToc(page);
-  const key = comp ? "#/c/" + comp.id : h === "/installation" || h === "/theming" ? "#" + h : "#/components";
+  const key = comp ? "#/c/" + comp.id : PAGES[h] ? "#" + h : "#/components";
   document.querySelectorAll(".tree a").forEach((a) => a.classList.toggle("on", a.dataset.href === key));
   document.querySelector(".tree a.on")?.scrollIntoView({ block: "nearest" });
   document.body.classList.remove("nav-open");
-  document.title = (comp ? comp.name : h === "/installation" ? "Installation" : h === "/theming" ? "Theming" : "Components") + " — hmm.css";
+  document.title = (comp ? comp.name : PAGES[h] ? page.crumbs.replace(/<[^>]+>/g, "") : "Components") + " — hmm.css";
   scrollTo({ top: 0, behavior: "instant" });
 }
 
@@ -838,7 +1013,7 @@ document.addEventListener("click", (e) => {
 });
 
 /* ---------- command palette ---------- */
-const pages = [["Overview", "Home", "#/"], ["Installation", "Getting started", "#/installation"], ["Theming", "Getting started", "#/theming"], ["Components", "Getting started", "#/components"], ...C.map((c) => [c.name, c.group, `#/c/${c.id}`])];
+const pages = [["Overview", "Home", "#/"], ["Installation", "Getting started", "#/installation"], ["Theming", "Getting started", "#/theming"], ["Components", "Getting started", "#/components"], ["Pricing", "hmm Pro", "#/pricing"], ["License key", "hmm Pro", "#/license"], ...C.map((c) => [c.name, c.group, `#/c/${c.id}`])];
 let sel = 0, hits = pages;
 const cmdk = $("#cmdk"), q = $("#q"), list = $("#results");
 function drawHits() {
